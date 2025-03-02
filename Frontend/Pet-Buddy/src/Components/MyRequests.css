@@ -1,0 +1,396 @@
+.requests-container {
+    min-height: calc(100vh - 80px); /* Subtract navbar height */
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f5f5f5; /* Light background color */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.requests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-top: 100px;
+    padding: 0 20px;
+}
+
+.requests-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-left: 30px;
+    color: #333;
+}
+
+.make-request-btn {
+    background: white;
+    color: #333;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.make-request-btn:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.request-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.request-card:not(.dropdown-active):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.request-card.dropdown-active {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.request-info h2 {
+    font-size: 20px;
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.request-info p {
+    color: #666;
+    margin: 0;
+    font-size: 14px;
+}
+
+.request-arrow {
+    color: #8865c1;
+    display: flex;
+    align-items: center;
+}
+
+.arrow-icon {
+    font-size: 20px;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.status.closed {
+    background: #ffebee;
+    color: #dc3545;
+}
+
+.status.active {
+    background: #e8f5e9;
+    color: #28a745;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+    position: relative;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.action-btn.view {
+    background: #8865c1;
+    color: white;
+}
+
+.action-btn.view:hover {
+    background: #7451b0;
+}
+
+.action-btn.delete {
+    background: #ffebee;
+    color: #dc3545;
+}
+
+.action-btn.delete:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.requests-list {
+    padding: 0 20px;
+}
+
+.request-card.closed {
+    background: #fff;
+    opacity: 0.8;
+}
+
+.request-card.closed .request-info h2 {
+    color: #666;
+}
+
+.request-card.closed .request-arrow {
+    color: #999;
+}
+
+.request-card.closed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.three-dots-btn {
+    background: none;
+    border: none;
+    color: #666;
+    padding: 8px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.three-dots-btn:hover {
+    color: #333;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 150px;
+    z-index: 1000;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.dropdown-menu button {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-menu button.cancel-btn {
+    color: #dc3545;
+}
+
+.dropdown-menu button.cancel-btn:hover {
+    background-color: #ffebee;
+}
+
+@media (max-width: 768px) {
+    .requests-container {
+        padding: 20px 10px;
+    }
+
+    .requests-header {
+        padding: 0 10px;
+    }
+
+    .request-card {
+        padding: 15px;
+    }
+
+    .request-info h2 {
+        font-size: 18px;
+    }
+
+    .make-request-btn {
+        padding: 10px 20px;
+    }
+
+    .requests-list {
+        padding: 0 10px;
+    }
+
+    .request-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .request-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+.request-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.closed {
+    background: #ffebee;
+    color: #dc3545;
+}
+
+.status-badge.done {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.request-card.closed {
+    opacity: 0.8;
+}
+
+.request-card.done {
+    opacity: 0.9;
+}
+
+.request-card.closed .request-info h2,
+.request-card.done .request-info h2 {
+    color: #666;
+}
+
+.request-card.closed .request-arrow,
+.request-card.done .request-arrow {
+    color: #999;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.filter-container {
+    position: relative;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    background: #f8f8f8;
+    border-color: #d0d0d0;
+}
+
+.filter-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 150px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.filter-option {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.filter-option:hover {
+    background-color: #f5f5f5;
+}
+
+.filter-option.active {
+    background-color: #f0f0f0;
+    color: #8865c1;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 8px 12px;
+    }
+
+    .make-request-btn {
+        padding: 8px 12px;
+    }
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.user-info svg {
+    font-size: 16px;
+    color: #8865c1;
+}
