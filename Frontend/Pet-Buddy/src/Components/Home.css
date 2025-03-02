@@ -1,0 +1,102 @@
+/* App.css */
+.App {
+    font-family: Arial, sans-serif;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #f1f1f1;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    color: white;
+    background-color: #5cb85c;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cta-button:hover {
+    background-color: #4cae4c;
+}
+
+/* Services Section */
+.services {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #fff;
+}
+
+.services h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.services-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.service-card {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: center;
+}
+
+.service-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.service-card p {
+    font-size: 1rem;
+}
+
+/* Testimonials Section */
+.testimonials {
+    background-color: #f7f7f7;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.testimonials h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.testimonial-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    width: 60%;
+    max-width: 600px;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.testimonial-card strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: #333;
+}
