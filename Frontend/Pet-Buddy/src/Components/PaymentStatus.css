@@ -1,0 +1,139 @@
+.payment-status-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.payment-status-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.status-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.status-icon.success {
+    color: #28a745;
+}
+
+.status-icon.failure {
+    color: #dc3545;
+}
+
+.payment-status-card h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.payment-status-card p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.payment-details {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item span:first-child {
+    color: #666;
+}
+
+.detail-item span:last-child {
+    font-weight: 500;
+    color: #333;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.back-button, .retry-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.back-button {
+    background: #8865c1;
+    color: white;
+}
+
+.back-button:hover {
+    background: #7451b0;
+}
+
+.retry-button {
+    background: #28a745;
+    color: white;
+}
+
+.retry-button:hover {
+    background: #218838;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .payment-status-card {
+        padding: 30px 20px;
+    }
+
+    .status-icon {
+        font-size: 60px;
+    }
+
+    .payment-status-card h1 {
+        font-size: 24px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .back-button, .retry-button {
+        width: 100%;
+    }
+} 
