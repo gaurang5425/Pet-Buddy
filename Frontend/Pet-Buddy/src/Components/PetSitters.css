@@ -1,0 +1,396 @@
+.pet-sitters-container {
+    min-height: calc(100vh - 80px);
+    position: relative;
+    overflow: hidden;
+    width: 1263px;
+}
+
+.pet-sitters-hero-content {
+    max-width: 1200px;
+    margin-top: 40px;
+    text-align: left;
+    background-color: #b8d8f0;
+    color: #333;
+    padding: 65px;
+    position: relative;
+    z-index: 1;
+}
+
+.pet-sitters-hero-content h1 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.pet-sitters-hero-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-highlight {
+    color: #ff6b2b;
+}
+
+.pet-sitters-quote-button {
+    background-color: #ff6b2b;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin: 20px 0;
+}
+
+.pet-sitters-search-form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.pet-sitters-form-header {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-services-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.pet-sitters-service-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    gap: 10px;
+}
+
+.pet-sitters-service-button:hover {
+    border-color: #8865c1;
+    background-color: #f8f5ff;
+}
+
+/* Selected state - will stay active even when clicked outside */
+.pet-sitters-service-button.active {
+    border: 2px solid #000; /* Thicker black border */
+    background-color: #f8f5ff;
+}
+
+.pet-sitters-service-button.active .pet-sitters-service-icon {
+    color: #8865c1;
+}
+
+.pet-sitters-service-button.active .pet-sitters-service-name {
+    color: #333;
+    font-weight: 500;
+}
+
+.pet-sitters-service-icon {
+    font-size: 20px;
+    color: #8865c1;
+}
+
+.pet-sitters-service-name {
+    font-size: 14px;
+    color: #666;
+    text-align: left;
+}
+
+.pet-sitters-search-inputs {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+.pet-sitters-location-field, .pet-sitters-pet-type-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.pet-sitters-location-field label, .pet-sitters-pet-type-field label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.pet-sitters-location-field input, .pet-sitters-pet-type-field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+}
+
+/* Style the select dropdown arrow */
+.pet-sitters-pet-type-field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Hover states */
+.pet-sitters-location-field input:hover,
+.pet-sitters-pet-type-field select:hover {
+    border-color: #8865c1;
+}
+
+/* Focus states */
+.pet-sitters-location-field input:focus,
+.pet-sitters-pet-type-field select:focus {
+    outline: none;
+    border-color: #8865c1;
+    box-shadow: 0 0 0 2px rgba(136, 101, 193, 0.1);
+}
+
+@media (max-width: 768px) {
+    .pet-sitters-services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .pet-sitters-search-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .pet-sitters-services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.pet-sitters-hero-text {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-hero-text h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.pet-sitters-hero-text h2 {
+    font-size: 2rem;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+}
+
+.pet-sitters-hero-text p {
+    margin: 8px 0;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.pet-sitters-quote-button {
+    margin-top: 15px;
+}
+
+/* Results Section Styles */
+.pet-sitters-results-section {
+    max-width: 1260px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 0 20px;
+}
+
+.pet-sitters-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-results-title {
+    font-size: 1.2rem;
+    margin-top: 30px;
+    color: #333;
+}
+
+.pet-sitters-sort-dropdown select {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: white;
+    margin-top: 30px;
+    color: #666;
+}
+
+.pet-sitters-overall-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-star-icon {
+    color: #ffd700;
+}
+
+/* Card Styles */
+.pet-sitters-cards-container {
+    display: grid;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pet-sitters-card {
+    display: flex;
+    background: #f8f8f8; /* Off-white background for cards */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.pet-sitters-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pet-sitters-card-image {
+    width: 300px;
+    height: 250px;
+}
+
+.pet-sitters-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-sitters-card-content {
+    padding: 20px;
+    flex: 1;
+}
+
+.pet-sitters-badge-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pet-sitters-badge-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.pet-sitters-card-content h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: #8865c1;
+}
+
+.pet-sitters-location {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.pet-sitters-distance {
+    color: #999;
+}
+
+.pet-sitters-description {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pet-sitters-rating, .pet-sitters-bookings {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
+}
+
+.pet-sitters-calendar-icon {
+    color: #8865c1;
+}
+
+.pet-sitters-price {
+    text-align: right;
+}
+
+.pet-sitters-price span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.pet-sitters-price strong {
+    color: #ff6b2b;
+    font-size: 1.2rem;
+    margin: 0 5px;
+}
+
+@media (max-width: 768px) {
+    .pet-sitters-card {
+        flex-direction: column;
+    }
+
+    .pet-sitters-card-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .pet-sitters-card-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+.pet-sitters-no-results {
+    background: white;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+}
+
+.pet-sitters-no-results-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.pet-sitters-no-results-icon {
+    font-size: 48px;
+    color: #8865c1;
+    margin-bottom: 20px;
+}
+
+.pet-sitters-no-results h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.pet-sitters-no-results p {
+    color: #666;
+    margin-bottom: 8px;
+}
