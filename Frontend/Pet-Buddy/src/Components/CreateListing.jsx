@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaUpload, FaTimes } from 'react-icons/fa';
+import { FaUpload, FaTimes, FaCheck, FaExclamationCircle } from 'react-icons/fa';
 import './CreateListing.css';
 
 const CreateListing = () => {
@@ -28,6 +28,9 @@ const CreateListing = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const [previewMoreImages, setPreviewMoreImages] = useState([]);
     const [error, setError] = useState('');
+    const [validation, setValidation] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [progress, setProgress] = useState(0);
 
     const serviceTypes = [
         'Pet Boarding',
@@ -51,11 +54,59 @@ const CreateListing = () => {
         'Other'
     ];
 
+    // Calculate form completion progress
+    useEffect(() => {
+        const requiredFields = [
+            'name',
+            'ownerName',
+            'location',
+            'distance',
+            'description',
+            'price',
+            'serviceType'
+        ];
+        
+        const completedFields = requiredFields.filter(field => formData[field] !== '');
+        const petTypesSelected = formData.petTypes.length > 0;
+        const imageUploaded = formData.base64Image !== '';
+        
+        const totalFields = requiredFields.length + 2; // +2 for petTypes and image
+        const completedCount = completedFields.length + (petTypesSelected ? 1 : 0) + (imageUploaded ? 1 : 0);
+        
+        setProgress(Math.round((completedCount / totalFields) * 100));
+    }, [formData]);
+
+    const validateField = (name, value) => {
+        switch (name) {
+            case 'name':
+                return value.length >= 3 ? 'valid' : 'Name must be at least 3 characters long';
+            case 'ownerName':
+                return value.length >= 2 ? 'valid' : 'Owner name must be at least 2 characters long';
+            case 'location':
+                return value.length >= 5 ? 'valid' : 'Please enter a valid location';
+            case 'distance':
+                return /^\d+(\.\d+)?\s*(km|miles)$/i.test(value) ? 'valid' : 'Format: 2.5 km or 1.5 miles';
+            case 'price':
+                return value > 0 ? 'valid' : 'Price must be greater than 0';
+            case 'description':
+                return value.length >= 50 ? 'valid' : 'Description must be at least 50 characters long';
+            default:
+                return 'valid';
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
+        }));
+
+        // Real-time validation
+        const validationResult = validateField(name, value);
+        setValidation(prev => ({
+            ...prev,
+            [name]: validationResult
         }));
     };
 
@@ -72,6 +123,12 @@ const CreateListing = () => {
     const handleMainImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setError('Image size should be less than 5MB');
+                return;
+            }
+
             setFormData(prev => ({
                 ...prev,
                 image: file
@@ -92,6 +149,19 @@ const CreateListing = () => {
     const handleMoreImagesChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
+            // Validate total number of images (max 5)
+            if (files.length > 5) {
+                setError('You can upload maximum 5 additional images');
+                return;
+            }
+
+            // Validate file sizes
+            const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+            if (oversizedFiles.length > 0) {
+                setError('All images should be less than 5MB');
+                return;
+            }
+
             setFormData(prev => ({
                 ...prev,
                 moreImages: files
@@ -140,19 +210,48 @@ const CreateListing = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsSubmitting(true);
 
         try {
-            // Validate required fields
+            // Check required fields first
             if (!formData.name || !formData.ownerName || !formData.location || 
                 !formData.distance || !formData.description || !formData.price || 
                 !formData.serviceType || formData.petTypes.length === 0 || !formData.base64Image) {
                 setError('Please fill in all required fields');
+                setIsSubmitting(false);
                 return;
             }
 
-            // Format the data according to the backend model
+            // Validate each field
+            const newValidation = {};
+            let hasErrors = false;
+
+            // Only validate fields that have values
+            Object.keys(formData).forEach(key => {
+                if (key !== 'rating' && key !== 'reviews' && key !== 'completedBookings' && 
+                    key !== 'badges' && key !== 'image' && key !== 'moreImages' && 
+                    key !== 'base64Image' && key !== 'base64MoreImages') {
+                    const value = formData[key];
+                    if (value) {  // Only validate if the field has a value
+                        const validationResult = validateField(key, value);
+                        newValidation[key] = validationResult;
+                        if (validationResult !== 'valid') {
+                            hasErrors = true;
+                        }
+                    }
+                }
+            });
+
+            setValidation(newValidation);
+
+            if (hasErrors) {
+                setError('Please fix the validation errors before submitting');
+                setIsSubmitting(false);
+                return;
+            }
+
             const serviceData = {
-                id: Date.now(), // Generate a unique ID
+                id: Date.now(),
                 name: formData.name,
                 ownerName: formData.ownerName,
                 location: formData.location,
@@ -177,186 +276,273 @@ const CreateListing = () => {
         } catch (err) {
             console.error('Error creating listing:', err);
             setError(err.response?.data?.message || 'Error creating listing. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="create-listing-container">
-            <h2>Create New Pet Service Listing</h2>
-            <form onSubmit={handleSubmit} className="create-listing-form">
-                <div className="form-group">
-                    <label>Service Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        placeholder="Enter service name"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Owner Name</label>
-                    <input
-                        type="text"
-                        name="ownerName"
-                        value={formData.ownerName}
-                        onChange={handleChange}
-                        required
-                        placeholder="Enter owner name"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Location</label>
-                    <input
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        required
-                        placeholder="Enter location"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Distance</label>
-                    <input
-                        type="text"
-                        name="distance"
-                        value={formData.distance}
-                        onChange={handleChange}
-                        required
-                        placeholder="e.g., 2.5 km"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Service Type</label>
-                    <select
-                        name="serviceType"
-                        value={formData.serviceType}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select service type</option>
-                        {serviceTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label>Pet Types</label>
-                    <div className="pet-types-grid">
-                        {petTypes.map(type => (
-                            <label key={type} className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    value={type}
-                                    checked={formData.petTypes.includes(type)}
-                                    onChange={handlePetTypeChange}
-                                />
-                                {type}
-                            </label>
-                        ))}
+        <div className="page-wrapper">
+            <div className="create-listing-container">
+                <h2>Create New Pet Service Listing</h2>
+                
+                {/* Progress Bar */}
+                <div className="progress-container">
+                    <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                     </div>
+                    <span className="progress-text">{progress}% Complete</span>
                 </div>
 
-                <div className="form-group">
-                    <label>Price (₹)</label>
-                    <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        required
-                        min="0"
-                        step="0.01"
-                        placeholder="Enter price"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Description</label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                        rows="4"
-                        placeholder="Describe your service"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Main Service Image</label>
-                    <div className="image-upload-container">
-                        {previewImage ? (
-                            <div className="image-preview">
-                                <img src={previewImage} alt="Preview" />
-                                <button
-                                    type="button"
-                                    className="remove-image"
-                                    onClick={removeMainImage}
-                                >
-                                    <FaTimes />
-                                </button>
-                            </div>
-                        ) : (
-                            <label className="image-upload-label">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleMainImageChange}
-                                    required
-                                    style={{ display: 'none' }}
-                                />
-                                <FaUpload className="upload-icon" />
-                                <span>Upload Main Image</span>
-                            </label>
+                <form onSubmit={handleSubmit} className="create-listing-form">
+                    <div className="form-group">
+                        <label>Service Name</label>
+                        <div className="input-container">
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter service name"
+                                className={validation.name === 'valid' ? 'valid' : validation.name ? 'invalid' : ''}
+                            />
+                            {validation.name === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.name && validation.name !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.name && validation.name !== 'valid' && (
+                            <span className="validation-message">{validation.name}</span>
                         )}
                     </div>
-                </div>
 
-                <div className="form-group">
-                    <label>Additional Images</label>
-                    <div className="more-images-container">
-                        <div className="more-images-grid">
-                            {previewMoreImages.map((preview, index) => (
-                                <div key={index} className="more-image-preview">
-                                    <img src={preview} alt={`Additional ${index + 1}`} />
+                    <div className="form-group">
+                        <label>Owner Name</label>
+                        <div className="input-container">
+                            <input
+                                type="text"
+                                name="ownerName"
+                                value={formData.ownerName}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter owner name"
+                                className={validation.ownerName === 'valid' ? 'valid' : validation.ownerName ? 'invalid' : ''}
+                            />
+                            {validation.ownerName === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.ownerName && validation.ownerName !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.ownerName && validation.ownerName !== 'valid' && (
+                            <span className="validation-message">{validation.ownerName}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Location</label>
+                        <div className="input-container">
+                            <input
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter location"
+                                className={validation.location === 'valid' ? 'valid' : validation.location ? 'invalid' : ''}
+                            />
+                            {validation.location === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.location && validation.location !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.location && validation.location !== 'valid' && (
+                            <span className="validation-message">{validation.location}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Distance</label>
+                        <div className="input-container">
+                            <input
+                                type="text"
+                                name="distance"
+                                value={formData.distance}
+                                onChange={handleChange}
+                                required
+                                placeholder="e.g., 2.5 km"
+                                className={validation.distance === 'valid' ? 'valid' : validation.distance ? 'invalid' : ''}
+                            />
+                            {validation.distance === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.distance && validation.distance !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.distance && validation.distance !== 'valid' && (
+                            <span className="validation-message">{validation.distance}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Service Type</label>
+                        <div className="input-container">
+                            <select
+                                name="serviceType"
+                                value={formData.serviceType}
+                                onChange={handleChange}
+                                required
+                                className={validation.serviceType === 'valid' ? 'valid' : validation.serviceType ? 'invalid' : ''}
+                            >
+                                <option value="">Select service type</option>
+                                {serviceTypes.map(type => (
+                                    <option key={type} value={type}>{type}</option>
+                                ))}
+                            </select>
+                            {validation.serviceType === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.serviceType && validation.serviceType !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.serviceType && validation.serviceType !== 'valid' && (
+                            <span className="validation-message">{validation.serviceType}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Pet Types</label>
+                        <div className="pet-types-grid">
+                            {petTypes.map(type => (
+                                <label key={type} className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        value={type}
+                                        checked={formData.petTypes.includes(type)}
+                                        onChange={handlePetTypeChange}
+                                    />
+                                    {type}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Price (₹)</label>
+                        <div className="input-container">
+                            <input
+                                type="number"
+                                name="price"
+                                value={formData.price}
+                                onChange={handleChange}
+                                required
+                                min="0"
+                                step="0.01"
+                                placeholder="Enter price"
+                                className={validation.price === 'valid' ? 'valid' : validation.price ? 'invalid' : ''}
+                            />
+                            {validation.price === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.price && validation.price !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.price && validation.price !== 'valid' && (
+                            <span className="validation-message">{validation.price}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Description</label>
+                        <div className="input-container">
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                required
+                                rows="4"
+                                placeholder="Describe your service"
+                                className={validation.description === 'valid' ? 'valid' : validation.description ? 'invalid' : ''}
+                            />
+                            {validation.description === 'valid' && <FaCheck className="validation-icon valid" />}
+                            {validation.description && validation.description !== 'valid' && (
+                                <FaExclamationCircle className="validation-icon invalid" />
+                            )}
+                        </div>
+                        {validation.description && validation.description !== 'valid' && (
+                            <span className="validation-message">{validation.description}</span>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Main Service Image</label>
+                        <div className="image-upload-container">
+                            {previewImage ? (
+                                <div className="image-preview">
+                                    <img src={previewImage} alt="Preview" />
                                     <button
                                         type="button"
                                         className="remove-image"
-                                        onClick={() => removeMoreImage(index)}
+                                        onClick={removeMainImage}
                                     >
                                         <FaTimes />
                                     </button>
                                 </div>
-                            ))}
+                            ) : (
+                                <label className="image-upload-label">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleMainImageChange}
+                                        required
+                                        style={{ display: 'none' }}
+                                    />
+                                    <FaUpload className="upload-icon" />
+                                    <span>Upload Main Image</span>
+                                </label>
+                            )}
                         </div>
-                        <label className="image-upload-label">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleMoreImagesChange}
-                                multiple
-                                style={{ display: 'none' }}
-                            />
-                            <FaUpload className="upload-icon" />
-                            <span>Add More Images</span>
-                        </label>
                     </div>
-                </div>
 
-                {error && <div className="error-message">{error}</div>}
+                    <div className="form-group">
+                        <label>Additional Images</label>
+                        <div className="more-images-container">
+                            <div className="more-images-grid">
+                                {previewMoreImages.map((preview, index) => (
+                                    <div key={index} className="more-image-preview">
+                                        <img src={preview} alt={`Additional ${index + 1}`} />
+                                        <button
+                                            type="button"
+                                            className="remove-image"
+                                            onClick={() => removeMoreImage(index)}
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <label className="image-upload-label">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleMoreImagesChange}
+                                    multiple
+                                    style={{ display: 'none' }}
+                                />
+                                <FaUpload className="upload-icon" />
+                                <span>Add More Images</span>
+                            </label>
+                        </div>
+                    </div>
 
-                <button type="submit" className="submit-button">
-                    Create Listing
-                </button>
-            </form>
+                    {error && <div className="error-message">{error}</div>}
+
+                    <button 
+                        type="submit" 
+                        className={`submit-button ${isSubmitting ? 'submitting' : ''}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Creating Listing...' : 'Create Listing'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
