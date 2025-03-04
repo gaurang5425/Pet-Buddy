@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import './Home.css';
 
 const App = () => {
+    const navigate = useNavigate();
+    const { userData } = useUser();
+
+    useEffect(() => {
+        if (userData) {
+            if (userData.role === 'OWNER') {
+                navigate('/my-listings');
+            } else if (userData.role === 'USER'){
+                navigate('/PetSitters');
+            } else {
+                navigate('/');
+            }
+        }
+    }, [userData, navigate]);
+
+    const handleBookNow = () => {
+        if (userData) {
+            if (userData.role === 'OWNER') {
+                navigate('/my-listings');
+            } else {
+                navigate('/PetSitters');
+            }
+        } else {
+            navigate('/');
+        }
+    };
+
     return (
         <div className="App">
             {/* Hero Section */}
@@ -9,7 +38,7 @@ const App = () => {
                 <div className="hero-content">
                     <h1>Find Trusted Pet Sitters & Dog Walkers</h1>
                     <p>Connecting pet owners with pet care providers</p>
-                    <button className="cta-button">Book Now</button>
+                    <button className="cta-button" onClick={handleBookNow}>Book Now</button>
                 </div>
             </section>
 

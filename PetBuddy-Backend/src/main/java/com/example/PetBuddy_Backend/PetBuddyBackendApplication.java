@@ -18,7 +18,7 @@ public class PetBuddyBackendApplication {
 		return new RestTemplate();
 	}
 	@Bean
-
+ 
 
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {

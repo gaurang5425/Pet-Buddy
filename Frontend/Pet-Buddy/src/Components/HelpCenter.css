@@ -1,95 +1,241 @@
 /* General Container */
 .help-center-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f8f9fa;
-    padding: 20px;
     margin-top: 80px;
+}
+
+.help-welcome-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.help-welcome-section h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.help-welcome-section p {
+    color: #666;
+    font-size: 1.1rem;
 }
 
 /* Search Section */
 .help-search-section {
+    margin-bottom: 3rem;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 .help-search-section h2 {
     margin-bottom: 10px;
 }
+
+.search-form {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
 .help-search-input {
-    width: 80%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.help-search-input:focus {
+    outline: none;
+    border-color: #4CAF50;
 }
 
 /* Help Categories */
 .help-categories {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
 }
 .help-category-card {
     background: white;
-    padding: 15px;
+    padding: 1.5rem;
     border-radius: 10px;
-    width: 180px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     cursor: pointer;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
 }
 .help-category-card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-.help-category-icon {
+.help-category-card.selected {
+    border: 2px solid #4CAF50;
+    background-color: #f8fff8;
+}
+.category-icon {
     font-size: 2rem;
+    color: #4CAF50;
+    margin-bottom: 1rem;
 }
 .help-category-card h3 {
-    margin-top: 10px;
+    margin: 0.5rem 0;
+    color: #333;
+}
+.help-category-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
 }
 
 /* FAQ Section */
 .help-faq-section {
+    margin-bottom: 3rem;
     text-align: left;
     max-width: 600px;
     margin: 0 auto;
 }
+.help-faq-section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
 .help-faq-item {
+    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
     background: white;
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .help-faq-question {
     width: 100%;
+    padding: 1rem;
+    background: white;
     border: none;
-    background: none;
     text-align: left;
     font-size: 1rem;
-    padding: 10px;
+    color: #333;
     cursor: pointer;
-    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.help-faq-question:hover {
+    background-color: #f5f5f5;
+}
+.help-faq-question.open {
+    background-color: #f8fff8;
+    border-bottom: 1px solid #e0e0e0;
+}
+.toggle-icon {
+    color: #4CAF50;
 }
 .help-faq-answer {
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
+    padding: 1rem;
+    background-color: #f8fff8;
+}
+.help-faq-answer p {
+    margin: 0 0 1rem 0;
+    color: #666;
+    line-height: 1.5;
+}
+.faq-actions {
+    display: flex;
+    gap: 1rem;
+}
+.helpful-btn, .contact-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+.helpful-btn {
+    background-color: #e8f5e9;
+    color: #4CAF50;
+}
+.contact-btn {
+    background-color: #f5f5f5;
+    color: #666;
+}
+.helpful-btn:hover {
+    background-color: #c8e6c9;
+}
+.contact-btn:hover {
+    background-color: #e0e0e0;
 }
 
 /* Footer */
 .help-footer {
-    margin-top: 20px;
+    text-align: center;
+    padding: 2rem;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.footer-content p {
+    margin-bottom: 1rem;
+    color: #666;
+}
+.footer-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+.contact-support-btn, .email-support-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
     font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
-.help-footer a {
-    color: #007bff;
-    text-decoration: none;
+.contact-support-btn {
+    background-color: #4CAF50;
+    color: white;
 }
-.help-footer a:hover {
-    text-decoration: underline;
+.email-support-btn {
+    background-color: #f5f5f5;
+    color: #666;
+}
+.contact-support-btn:hover {
+    background-color: #45a049;
+}
+.email-support-btn:hover {
+    background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .help-center-container {
+        padding: 1rem;
+    }
+    .help-categories {
+        grid-template-columns: 1fr;
+    }
+    .footer-buttons {
+        flex-direction: column;
+    }
+    .contact-support-btn, .email-support-btn {
+        width: 100%;
+    }
 }

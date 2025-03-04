@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
 import { FaGlobe, FaChevronDown, FaCheck, FaUserCircle } from 'react-icons/fa';
 import './Navbar.css';
 import logo from '../assets/img.png'; // Ensure your logo is correctly placed
+import defaultProfileImg from '../assets/pro1.jpg';
 
 const Navbar = () => {
-    const { currentUser, logout } = useAuth();
+    const { logout } = useAuth();
+    const { userData, updateUserData } = useUser();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedLang, setSelectedLang] = useState('en');
@@ -35,9 +38,45 @@ const Navbar = () => {
     }, []);
 
     const handleLogout = () => {
+        // Clear user context
+        updateUserData(null);
+        // Clear auth context
         logout();
+        // Close menu
         setShowUserMenu(false);
-        navigate('/');
+        // Redirect to backend logout endpoint
+        window.location.href = 'http://localhost:8080/logout';
+    };
+
+    const renderNavLinks = () => {
+        if (!userData) {
+            return (
+                <>
+                    {/* <Link to="/PetSitters" className="nav-link">Services Near Me</Link>
+                    <Link to="/HelpCenter" className="nav-link">Help Center</Link> */}
+                </>
+            );
+        }
+
+        if (userData.role === 'OWNER') {
+            return (
+                <>
+                    <Link to="/my-listings" className="nav-link">My Listings</Link>
+                    <Link to="/booking-requests" className="nav-link">Booking Requests</Link>
+                    <Link to="/earnings" className="nav-link">My Earnings</Link>
+                    <Link to="/HelpCenter" className="nav-link">Help Center</Link>
+                </>
+            );
+        }
+
+        // Default for USER role
+        return (
+            <>
+                <Link to="/PetSitters" className="nav-link">Services Near Me</Link>
+                <Link to="/my-requests" className="nav-link">My Requests</Link>
+                <Link to="/HelpCenter" className="nav-link">Help Center</Link>
+            </>
+        );
     };
 
     return (
@@ -48,9 +87,7 @@ const Navbar = () => {
                 </Link>
 
                 <div className="nav-menu">
-                    <Link to="/PetSitters" className="nav-link">Services Near Me</Link>
-                    <Link to="/jobs" className="nav-link">Pet Sitter Jobs</Link>
-                    <Link to="/HelpCenter" className="nav-link">Help Center</Link>
+                    {renderNavLinks()}
 
                     <div className="language-selector">
                         <button 
@@ -86,17 +123,24 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {currentUser ? (
+                    {userData ? (
                         <div className="user-profile" ref={menuRef}>
                             <div 
                                 className="profile-trigger"
                                 onClick={() => setShowUserMenu(!showUserMenu)}
                             >
-                                {currentUser.profileImage ? (
+                                {userData.profileImage ? (
                                     <img 
-                                        src={currentUser.profileImage} 
+                                        src={userData.profileImage.startsWith('data:') 
+                                            ? userData.profileImage 
+                                            : `data:image/jpeg;base64,${userData.profileImage}`}
                                         alt="Profile" 
                                         className="profile-image"
+                                        onError={(e) => {
+                                            console.log('Image load error');
+                                            e.target.onerror = null;
+                                            e.target.src = defaultProfileImg;
+                                        }}
                                     />
                                 ) : (
                                     <FaUserCircle className="profile-icon" />
@@ -105,8 +149,8 @@ const Navbar = () => {
                             {showUserMenu && (
                                 <div className="user-dropdown">
                                     <div className="user-info">
-                                        <span className="user-name">{currentUser.name}</span>
-                                        <span className="user-email">{currentUser.email}</span>
+                                        <span className="user-name">{userData.name || 'User'}</span>
+                                        <span className="user-email">{userData.email || 'email@example.com'}</span>
                                     </div>
                                     <Link to="/UserProfile" className="dropdown-item">My Profile</Link>
                                     <button onClick={handleLogout} className="dropdown-item logout">

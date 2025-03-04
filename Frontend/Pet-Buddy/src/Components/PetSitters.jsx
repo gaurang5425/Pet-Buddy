@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './PetSitters.css';
 import { FaBed, FaHome, FaDog, FaBath, FaCar, FaPaw, FaStar, FaCalendar } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import pro11 from '../assets/pro11.jpg';
 import id from '../assets/id.png';
 import phoneBadge from '../assets/mobile.png';
 import emailBadge from '../assets/email.png';
@@ -10,11 +10,49 @@ import documentBadge from '../assets/certification.png';
 import verifiedBadge from '../assets/sitter_intro_verified.png';
 
 const PetSitters = () => {
-    const [location, setLocation] = React.useState("Ahmedabad, Gujarat, India");
-    const [selectedService, setSelectedService] = React.useState("Pet Boarding");
-    const [selectedPetType, setSelectedPetType] = React.useState("All Pets");
-    const [sortBy, setSortBy] = React.useState("recommended");
+    const [location, setLocation] = useState("Ahmedabad, Gujarat, India");
+    const [selectedService, setSelectedService] = useState("Pet Boarding");
+    const [selectedPetType, setSelectedPetType] = useState("All Pets");
+    const [sortBy, setSortBy] = useState("recommended");
+    const [petSitterCards, setPetSitterCards] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchPetSitters();
+    }, []);
+
+    const fetchPetSitters = async () => {
+        try {
+            console.log('Starting to fetch pet sitters...');
+            
+            const response = await axios.get('http://localhost:8080/api/pet-services');
+            
+            console.log('API Response:', response.data);
+            
+            if (!response.data) {
+                console.log('No data received from API');
+                throw new Error('No data received from API');
+            }
+
+            // Log the first card's image data to debug
+            if (response.data.length > 0) {
+                console.log('First card image data:', {
+                    base64Image: response.data[0].base64Image,
+                    image: response.data[0].image
+                });
+            }
+
+            setPetSitterCards(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching pet sitters:', err);
+            setError(err.response?.data?.message || 'Error fetching pet sitters');
+            setLoading(false);
+            setPetSitterCards([]);
+        }
+    };
 
     const services = [
         { id: 1, name: 'Pet Boarding', icon: <FaBed />, color: '#8865c1' },
@@ -38,81 +76,13 @@ const PetSitters = () => {
         "Other"
     ];
 
-    const petSitterCards = [
-        {
-            id: 1,
-            name: "All Good Dogs - Training And Boarding",
-            ownerName: "Raj Patel",
-            location: "Ahmedabad, Gujarat",
-            distance: "2.31 Km.",
-            description: "Hello Guys, with hands on previous experience and genuine love for pets...",
-            rating: 5,
-            reviews: 6,
-            completedBookings: 3,
-            price: 500,
-            image: pro11,//get image from database
-            badges: ["id", "phone", "email", "document", "verified"],
-            serviceType: "Pet Boarding",
-            petTypes: ["Dog", "Cat"]
-        },
-        {
-            id: 2,
-            name: "Pet Paradise",
-            ownerName: "Priya Shah",
-            location: "Ahmedabad, Gujarat",
-            distance: "3.5 Km.",
-            description: "Professional pet boarding with 24/7 care...",
-            rating: 4,
-            reviews: 8,
-            completedBookings: 5,
-            price: 600,
-            image: pro11,
-            badges: ["id", "phone", "email", "verified"],
-            serviceType: "Pet Boarding",
-            petTypes: ["Dog", "Cat", "Bird"]
-        },
-        {
-            id: 3,
-            name: "Home Pet Care",
-            ownerName: "Amit Desai",
-            location: "Ahmedabad, Gujarat",
-            distance: "4.2 Km.",
-            description: "Professional house sitting services...",
-            rating: 5,
-            reviews: 10,
-            completedBookings: 7,
-            price: 450,
-            image: pro11,
-            badges: ["id", "phone", "email", "verified"],
-            serviceType: "House Sitting",
-            petTypes: ["Cat", "Fish", "Bird"]
-        },
-        {
-            id: 4,
-            name: "Happy Walks",
-            ownerName: "Meera Joshi",
-            location: "Ahmedabad, Gujarat",
-            distance: "2.8 Km.",
-            description: "Professional dog walking services...",
-            rating: 5,
-            reviews: 12,
-            completedBookings: 15,
-            price: 300,
-            image: pro11,
-            badges: ["id", "phone", "email", "verified"],
-            serviceType: "Dog Walking",
-            petTypes: ["Dog"]
-        },
-        // Add more cards for each service type...
-    ];
-
     // Create a badge mapping object
     const badgeImages = {
+        'Certified': documentBadge,
+        'Top Rated': verifiedBadge,
         'id': id,
         'phone': phoneBadge,
         'email': emailBadge,
-        'document': documentBadge,
-        'verified': verifiedBadge
     };
 
     // Filter cards based on both service type and pet type
@@ -130,13 +100,11 @@ const PetSitters = () => {
             case "price-high":
                 return b.price - a.price;
             case "rating":
-                // Sort by rating first, then by number of reviews if ratings are equal
                 if (b.rating === a.rating) {
                     return b.reviews - a.reviews;
                 }
                 return b.rating - a.rating;
             default: // "recommended"
-                // Sort by rating and reviews combined
                 const scoreA = (a.rating * 0.6) + (a.reviews * 0.4);
                 const scoreB = (b.rating * 0.6) + (b.reviews * 0.4);
                 return scoreB - scoreA;
@@ -152,6 +120,25 @@ const PetSitters = () => {
     const handleCardClick = (cardId) => {
         navigate(`/pet-sitter/${cardId}`);
     };
+
+    if (loading) {
+        return (
+            <div className="pet-sitters-loading">
+                <FaPaw className="pet-sitters-loading-icon" />
+                <p>Loading pet sitters...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="pet-sitters-error">
+                <FaPaw className="pet-sitters-error-icon" />
+                <p>Error: {error}</p>
+                <button onClick={fetchPetSitters}>Try Again</button>
+            </div>
+        );
+    }
 
     return (
         <div className="pet-sitters-container">
@@ -248,7 +235,17 @@ const PetSitters = () => {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className="pet-sitters-card-image">
-                                        <img src={card.image} alt={card.name} />
+                                        <img 
+                                            src={card.base64Image ? 
+                                                `data:image/jpeg;base64,${card.base64Image}` : 
+                                                card.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='
+                                            } 
+                                            alt={card.name} 
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
+                                            }}
+                                        />
                                     </div>
                                     <div className="pet-sitters-card-content">
                                         <div className="pet-sitters-badge-container">
@@ -271,7 +268,11 @@ const PetSitters = () => {
                                         <div className="pet-sitters-card-footer">
                                             <div className="pet-sitters-rating">
                                                 {[...Array(5)].map((_, index) => (
-                                                    <FaStar key={index} className="pet-sitters-star-icon" />
+                                                    <FaStar 
+                                                        key={index} 
+                                                        className="pet-sitters-star-icon"
+                                                        style={{ color: index < card.rating ? '#ffd700' : '#e0e0e0' }}
+                                                    />
                                                 ))}
                                                 <span>{card.reviews} Reviews</span>
                                             </div>
@@ -281,7 +282,7 @@ const PetSitters = () => {
                                             </div>
                                             <div className="pet-sitters-price">
                                                 <span>From</span>
-                                                <strong>INR {card.price}</strong>
+                                                <strong>${card.price}</strong>
                                                 <span>/visit</span>
                                             </div>
                                         </div>

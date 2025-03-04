@@ -1,112 +1,167 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './RequestSummary.css';
 
 const RequestSummary = () => {
+    const location = useLocation();
     const navigate = useNavigate();
-    const requestDetails = JSON.parse(localStorage.getItem('requestDetails'));
+    const [requestData, setRequestData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Calculate price details
-    const serviceCharge = 1500;
-    const gst = serviceCharge * 0.18;
-    const totalAmount = serviceCharge + gst;
+    useEffect(() => {
+        const fetchRequestData = async () => {
+            try {
+                const requestId = location.state?.requestId;
+                if (!requestId) {
+                    setError('No request ID provided');
+                    setLoading(false);
+                    return;
+                }
 
-    // Create formatted request summary object
-    const requestSummary = {
-        requestDetails: {
-            serviceSelected: requestDetails.service,
-            numberOfPets: requestDetails.petCount,
-            petType: requestDetails.petType,
-            breed: requestDetails.breed || '-',
-            size: requestDetails.size,
-            additionalInfo: requestDetails.additionalInfo || '-',
-            startDate: new Date(requestDetails.startDate).toLocaleString()
-        },
-        priceDetails: {
-            serviceCharge: `₹${serviceCharge}`,
-            gst: `₹${gst}`,
-            totalAmount: `₹${totalAmount}`
+                const response = await axios.get(`http://localhost:8080/api/services/requests/${requestId}`);
+                setRequestData(response.data);
+            } catch (err) {
+                console.error('Error fetching request data:', err);
+                setError(err.response?.data?.message || 'Error fetching request data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRequestData();
+    }, [location.state?.requestId]);
+
+    const handlePayment = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/product/v1/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: requestData.price * 100, // Convert to paise for payment gateway
+                    quantity: 1,
+                    name: `${requestData.serviceSelected} - ${requestData.petType}`, // Service type and pet type as product name
+                    currency: 'INR',
+                    requestId: requestData.id
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Payment initiation failed');
+            }
+
+            const data = await response.json();
+            
+            if (data.sessionUrl) {
+                // Store the request ID in localStorage for retrieval after payment
+                localStorage.setItem('paymentRequestId', requestData.id);
+                // Redirect to payment gateway checkout page
+                window.location.href = data.sessionUrl;
+            } else {
+                throw new Error('No session URL received');
+            }
+        } catch (error) {
+            console.error('Error initiating payment:', error);
+            setError('Failed to initiate payment. Please try again.');
         }
     };
 
-    useEffect(() => {
-        // Log formatted request summary
-        console.log('Request Summary:');
-        console.log(JSON.stringify(requestSummary, null, 2));
-    }, []);
+    if (loading) {
+        return <div className="loading">Loading request details...</div>;
+    }
 
-    const handlePayment = () => {
-        // Randomly navigate to success or failure page (50-50 chance)
-        const isSuccess = Math.random() >= 0.5;
-        navigate(isSuccess ? '/payment-success' : '/payment-failure');
-    };
+    if (error) {
+        return <div className="error-message">{error}</div>;
+    }
+
+    if (!requestData) {
+        return <div className="error-message">No request data found</div>;
+    }
+
+    // Calculate price details
+    const serviceCharge = requestData.price;
+    const gst = serviceCharge * 0.18;
+    const totalAmount = serviceCharge + gst;
 
     return (
-        <div className="summary-container-outer">
-            <div className="summary-container">
+        <div className="request-summary-container">
+            <div className="request-summary-content">
                 <h2>Request Summary</h2>
-                <p className="summary-description">
-                    Confirm or edit the details of your request before sending it out to pet lovers in your area.
-                </p>
-
-                <div className="summary-details">
+                
+                <div className="summary-section">
+                    <h3>Personal Information</h3>
                     <div className="summary-item">
-                        <h3>Service Selected</h3>
-                        <p>{requestDetails.service}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>How many pets do you need to board?</h3>
-                        <p>{requestDetails.petCount}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>What type of pet is it?</h3>
-                        <p>{requestDetails.petType}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>What breed is it?</h3>
-                        <p>{requestDetails.breed || '-'}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>What is the size of your pet?</h3>
-                        <p>{requestDetails.size}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>Additional Information</h3>
-                        <p>{requestDetails.additionalInfo || '-'}</p>
-                    </div>
-
-                    <div className="summary-item">
-                        <h3>Service Start Date</h3>
-                        <p>{new Date(requestDetails.startDate).toLocaleString()}</p>
+                        <span className="label">Name:</span>
+                        <span className="value">{requestData.userName}</span>
                     </div>
                 </div>
 
-                <div className="price-summary">
+                <div className="summary-section">
+                    <h3>Service Details</h3>
+                    <div className="summary-item">
+                        <span className="label">Service Provider:</span>
+                        <span className="value">{requestData.owner}</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="label">Service Type:</span>
+                        <span className="value">{requestData.serviceSelected}</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="label">Status:</span>
+                        <span className={`value status-${requestData.status.toLowerCase()}`}>
+                            {requestData.status}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="summary-section">
+                    <h3>Pet Information</h3>
+                    <div className="summary-item">
+                        <span className="label">Number of Pets:</span>
+                        <span className="value">{requestData.numberOfPets}</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="label">Pet Type:</span>
+                        <span className="value">{requestData.petType}</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="label">Breed:</span>
+                        <span className="value">{requestData.breed}</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="label">Size:</span>
+                        <span className="value">{requestData.size}</span>
+                    </div>
+                </div>
+
+                <div className="summary-section">
+                    <h3>Booking Details</h3>
+                    <div className="summary-item">
+                        <span className="label">Start Date:</span>
+                        <span className="value">{new Date(requestData.startDate).toLocaleString()}</span>
+                    </div>
+                    {requestData.additionalInfo && (
+                        <div className="summary-item">
+                            <span className="label">Additional Information:</span>
+                            <span className="value">{requestData.additionalInfo}</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="summary-section">
                     <h3>Price Details</h3>
-                    <div className="price-item">
-                        <span>Service Charge</span>
-                        <span>₹1500</span>
+                    <div className="summary-item">
+                        <span className="label">Service Charge:</span>
+                        <span className="value">₹{serviceCharge}</span>
                     </div>
-                    <div className="price-item">
-                        <span>GST (18%)</span>
-                        <span>₹270</span>
-                    </div>
-                    <div className="price-item total">
-                        <span>Total Amount</span>
-                        <span>₹1770</span>
-                    </div>
+                    
                 </div>
 
                 <div className="action-buttons">
-                    <button onClick={() => navigate(-1)} className="back-button">
-                        Edit Details
-                    </button>
-                    <button onClick={handlePayment} className="payment-button">
+                    <button onClick={handlePayment} className="view-bookings-button">
                         Proceed to Payment
                     </button>
                 </div>

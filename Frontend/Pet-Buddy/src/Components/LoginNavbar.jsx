@@ -12,8 +12,7 @@ const LoginNavbar = () => {
                 </Link>
 
                 <div className="nav-menu">
-                    <Link to="/Signup" className="nav-link">Signup</Link>
-                    <Link to="/Login" className="nav-link">Login</Link>
+                    <Link to="/Login" className="nav-link">Signup / Login</Link>
                 </div>
             </div>
         </nav>

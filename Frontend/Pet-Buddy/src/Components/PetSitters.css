@@ -394,3 +394,47 @@
     color: #666;
     margin-bottom: 8px;
 }
+
+.pet-sitters-loading,
+.pet-sitters-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: 2rem;
+}
+
+.pet-sitters-loading-icon,
+.pet-sitters-error-icon {
+    font-size: 3rem;
+    color: #8865c1;
+    margin-bottom: 1rem;
+    animation: bounce 1s infinite;
+}
+
+.pet-sitters-error button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: #8865c1;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.pet-sitters-error button:hover {
+    background: #7451b0;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}

@@ -41,7 +41,7 @@ public class ServiceRequestController {
     }
     
     // Get request by ID
-    @GetMapping("/requests/{id}")
+        @GetMapping("/requests/{id}")
     public ResponseEntity<ServiceRequest> getRequestById(@PathVariable("id") Long id) {
         Optional<ServiceRequest> request = requestService.getRequestById(id);
         

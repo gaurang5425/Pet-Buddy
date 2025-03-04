@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { FaChevronRight, FaEllipsisV, FaEdit, FaEye, FaBan, FaFilter, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './MyRequests.css';
 
 const MyRequests = () => {
@@ -12,45 +13,55 @@ const MyRequests = () => {
     const [filterStatus, setFilterStatus] = useState('All');
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
     const filterRef = useRef(null);
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     
-    const [requests] = useState([
-        {
-            id: 1,
-            service: 'Pet Training',
-            status: 'Active',
-            pets: 2,
-            startDate: 'Fri 28 Feb',
-            courses: 1,
-            userName: currentUser?.displayName || 'Anonymous User'
-        },
-        {
-            id: 2,
-            service: 'Pet Training',
-            status: 'Closed',
-            pets: 1,
-            startDate: 'Mon 25 Feb',
-            courses: 2,
-            userName: currentUser?.displayName || 'Anonymous User'
-        },
-        {
-            id: 3,
-            service: 'Dog Walking',
-            status: 'Done',
-            pets: 1,
-            startDate: 'Wed 1 Mar',
-            courses: 1,
-            userName: currentUser?.displayName || 'Anonymous User'
-        },
-        {
-            id: 4,
-            service: 'Pet Grooming',
-            status: 'Done',
-            pets: 2,
-            startDate: 'Tue 15 Feb',
-            courses: 1,
-            userName: currentUser?.displayName || 'Anonymous User'
-        }
-    ]);
+    // Map API status values to display values
+    const statusMap = {
+        'PENDING': 'Active',
+        'ACTIVE': 'Active',
+        'COMPLETED': 'Done',
+        'CANCELLED': 'Closed',
+        'DONE': 'Done'
+    };
+
+    // Get unique status values from API for filter options
+    const getFilterOptions = (requests) => {
+        const uniqueStatuses = new Set(requests.map(request => statusMap[request.status] || request.status));
+        return ['All', ...Array.from(uniqueStatuses)];
+    };
+
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/services/requests');
+                // Transform the API data to match our UI structure
+                const transformedRequests = response.data.map(request => ({
+                    id: request.id,
+                    service: request.serviceSelected,
+                    status: request.status,
+                    displayStatus: statusMap[request.status] || request.status, // Add display status
+                    pets: request.numberOfPets,
+                    startDate: new Date(request.startDate).toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        day: 'numeric', 
+                        month: 'short' 
+                    }),
+                    courses: 1,
+                    userName: request.userName || currentUser?.displayName || 'Anonymous User'
+                }));
+                setRequests(transformedRequests);
+            } catch (err) {
+                console.error('Error fetching requests:', err);
+                setError('Failed to load requests. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRequests();
+    }, [currentUser?.displayName]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -97,12 +108,21 @@ const MyRequests = () => {
         setActiveDropdown(activeDropdown === requestId ? null : requestId);
     };
 
-    const filterOptions = ['All', 'Active', 'Closed', 'Done'];
+    // Get filter options based on available statuses
+    const filterOptions = getFilterOptions(requests);
 
     const filteredRequests = requests.filter(request => {
         if (filterStatus === 'All') return true;
-        return request.status === filterStatus;
+        return request.displayStatus === filterStatus;
     });
+
+    if (loading) {
+        return <div className="loading">Loading requests...</div>;
+    }
+
+    if (error) {
+        return <div className="error-message">{error}</div>;
+    }
 
     return (
         <div className="requests-container">
@@ -135,7 +155,7 @@ const MyRequests = () => {
                     </div>
                     <button 
                         className="make-request-btn"
-                        onClick={() => navigate('/services')}
+                        onClick={() => navigate('/PetSitters')}
                     >
                         MAKE REQUEST
                     </button>
@@ -146,14 +166,14 @@ const MyRequests = () => {
                 {filteredRequests.map((request) => (
                     <div 
                         key={request.id} 
-                        className={`request-card ${request.status.toLowerCase()} ${activeDropdown === request.id ? 'dropdown-active' : ''}`} 
+                        className={`request-card ${request.displayStatus.toLowerCase()} ${activeDropdown === request.id ? 'dropdown-active' : ''}`} 
                         onClick={() => handleView(request.id)}
                     >
                         <div className="request-info">
                             <div className="request-header">
                                 <h2>{request.service}</h2>
-                                <span className={`status-badge ${request.status.toLowerCase()}`}>
-                                    {request.status}
+                                <span className={`status-badge ${request.displayStatus.toLowerCase()}`}>
+                                    {request.displayStatus}
                                 </span>
                             </div>
                             <div className="user-info">
