@@ -1,45 +1,73 @@
 import React, { useState } from "react";
-import { useAuth } from '../context/AuthContext';
-import { FaSearch, FaUser, FaPaw, FaMoneyBillWave, FaShieldAlt, FaCog, FaHandshake, FaCalendarAlt, FaQuestionCircle } from 'react-icons/fa';
+import { useUser } from '../context/UserContext';
+import { FaUser, FaPaw, FaMoneyBillWave, FaShieldAlt, FaCog, FaHandshake, FaCalendarAlt, FaQuestionCircle } from 'react-icons/fa';
 import "./HelpCenter.css";
 
-const userFaqs = [
-    {
-        question: "How do I book a pet sitter?",
-        answer: "To book a pet sitter, go to the Pet Sitters page, browse available sitters, select a profile, and click 'Book Now'. Follow the booking process to schedule your service."
-    },
-    {
-        question: "What payment methods are accepted?",
-        answer: "We accept all major credit/debit cards, UPI, and net banking. Payments are processed securely through our payment gateway."
-    },
-    {
-        question: "How can I track my booking status?",
-        answer: "You can track your booking status in the 'My Requests' section. Each booking shows its current status and history."
-    },
-    {
-        question: "What if I need to cancel a booking?",
-        answer: "You can cancel a booking through the 'My Requests' section. Cancellation policies vary based on the service type and timing."
-    }
-];
+const ownerFaqs = {
+    "Booking & Payments": [
+        {
+            question: "How do I manage my service listings?",
+            answer: "Go to your dashboard and click on 'My Services'. Here you can add, edit, or remove your service listings."
+        },
+        {
+            question: "How do I set my service prices?",
+            answer: "In your service listing, you can set base prices and customize rates for different service durations."
+        }
+    ],
+    "Pet Sitters & Walkers": [
+        {
+            question: "How do I verify my credentials?",
+            answer: "Upload your professional certifications and documents through your profile settings."
+        },
+        {
+            question: "How do I manage my availability?",
+            answer: "Use the calendar in your dashboard to set your working hours and mark unavailable dates."
+        }
+    ],
+    "Trust & Safety": [
+        {
+            question: "What insurance coverage do I have?",
+            answer: "As a verified service provider, you're covered under our comprehensive insurance policy."
+        },
+        {
+            question: "How do I handle emergency situations?",
+            answer: "Contact our 24/7 support line immediately. We have protocols in place for various emergency scenarios."
+        }
+    ]
+};
 
-const sitterFaqs = [
-    {
-        question: "How do I become a pet sitter?",
-        answer: "To become a pet sitter, complete your profile with required information, upload necessary documents, and wait for verification."
-    },
-    {
-        question: "How do I manage my bookings?",
-        answer: "Access your bookings through the 'My Bookings' section. You can view, accept, or decline requests and update booking status."
-    },
-    {
-        question: "How do I receive payments?",
-        answer: "Payments are processed automatically after service completion. You can view your earnings in the 'Earnings' section."
-    },
-    {
-        question: "What insurance coverage do I have?",
-        answer: "All verified pet sitters are covered under our insurance policy for the duration of their service."
-    }
-];
+const userFaqs = {
+    "Booking & Payments": [
+        {
+            question: "How do I book a service?",
+            answer: "Browse available services, select a provider, choose your preferred date and time, and complete the booking process."
+        },
+        {
+            question: "What payment methods are accepted?",
+            answer: "We accept all major credit/debit cards, UPI, and net banking. Payments are processed securely."
+        }
+    ],
+    "Pet Sitters & Walkers": [
+        {
+            question: "How do I find the right service provider?",
+            answer: "Browse provider profiles, read reviews, and check their experience and ratings to make an informed choice."
+        },
+        {
+            question: "What information should I provide about my pet?",
+            answer: "Include your pet's age, breed, special needs, and any behavioral information in your booking request."
+        }
+    ],
+    "Trust & Safety": [
+        {
+            question: "How is my pet's safety ensured?",
+            answer: "All service providers are verified, insured, and trained in pet safety protocols."
+        },
+        {
+            question: "What happens in case of emergencies?",
+            answer: "Our service providers are trained to handle emergencies and have direct access to veterinary support."
+        }
+    ]
+};
 
 const categories = [
     { 
@@ -56,76 +84,34 @@ const categories = [
         title: "Trust & Safety", 
         icon: <FaShieldAlt />,
         description: "Our safety measures and insurance coverage"
-    },
-    { 
-        title: "Account & Settings", 
-        icon: <FaCog />,
-        description: "Manage your account and preferences"
-    },
-    { 
-        title: "Earnings & Payments", 
-        icon: <FaMoneyBillWave />,
-        description: "Payment processing and earnings information"
-    },
-    { 
-        title: "Support & Contact", 
-        icon: <FaQuestionCircle />,
-        description: "Get help and contact support"
     }
 ];
 
 const HelpCenter = () => {
-    const { currentUser } = useAuth();
+    const { userData } = useUser();
     const [openIndex, setOpenIndex] = useState(null);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState("Booking & Payments");
 
     // Determine user role and FAQs
-    const userRole = currentUser?.role || 'user';
-    const faqs = userRole === 'sitter' ? sitterFaqs : userFaqs;
+    const isOwner = userData?.role === 'OWNER';
+    const faqs = isOwner ? ownerFaqs : userFaqs;
+    const currentFaqs = faqs[selectedCategory] || [];
 
     const toggleFAQ = (index) => {
         setOpenIndex(openIndex === index ? null : index);
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setShowSearchResults(true);
-    };
-
     const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
-        setShowSearchResults(false);
+        setSelectedCategory(category.title);
+        setOpenIndex(null); // Reset open FAQ when changing category
     };
-
-    const filteredFaqs = searchQuery
-        ? faqs.filter(faq => 
-            faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        : faqs;
 
     return (
         <div className="help-center-container">
             {/* Welcome Section */}
             <div className="help-welcome-section">
                 <h1>Welcome to Pet-Buddy Help Center</h1>
-                <p>Hello, {currentUser?.displayName || 'Guest'}! How can we assist you today?</p>
-            </div>
-
-            {/* Search Bar */}
-            <div className="help-search-section">
-                <form onSubmit={handleSearch} className="search-form">
-                    <FaSearch className="search-icon" />
-                    <input 
-                        type="text" 
-                        placeholder="Search for help topics..." 
-                        className="help-search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </form>
+                <p>Hello, {userData?.name || 'Guest'}! How can we assist you today?</p>
             </div>
 
             {/* Categories */}
@@ -133,7 +119,7 @@ const HelpCenter = () => {
                 {categories.map((category, index) => (
                     <div 
                         key={index} 
-                        className={`help-category-card ${selectedCategory?.title === category.title ? 'selected' : ''}`}
+                        className={`help-category-card ${selectedCategory === category.title ? 'selected' : ''}`}
                         onClick={() => handleCategoryClick(category)}
                     >
                         <div className="category-icon">{category.icon}</div>
@@ -145,8 +131,8 @@ const HelpCenter = () => {
 
             {/* FAQs Section */}
             <div className="help-faq-section">
-                <h2>Frequently Asked Questions</h2>
-                {filteredFaqs.map((faq, index) => (
+                <h2>{selectedCategory} - Frequently Asked Questions</h2>
+                {currentFaqs.map((faq, index) => (
                     <div key={index} className="help-faq-item">
                         <button 
                             className={`help-faq-question ${openIndex === index ? 'open' : ''}`}
