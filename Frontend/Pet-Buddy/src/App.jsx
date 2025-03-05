@@ -19,7 +19,6 @@ import RequestSummary from './Components/RequestSummary';
 // import MyBookings from './Components/MyBookings';
 import MyListings from './Components/MyListings';
 import BookingRequests from './Components/BookingRequests';
-import Earnings from './Components/Earnings';
 import ServiceRequests from './Components/ServiceRequests';
 import PaymentFailure from './Components/PaymentFailure';
 import PaymentSuccess from './Components/PaymentSuccess';
@@ -62,7 +61,6 @@ const Layout = () => {
                 <Route path="/booking-requests" element={<BookingRequests />} />
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/payment-failure" element={<PaymentFailure />} />
-                <Route path="/earnings" element={<Earnings />} />
                 <Route path="/service-requests" element={<ServiceRequests />} />
                 <Route path="/create-listing" element={<CreateListing />} />
             </Routes>

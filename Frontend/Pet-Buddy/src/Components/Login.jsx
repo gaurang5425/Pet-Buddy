@@ -37,6 +37,7 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             className="form-input"
+                            style={{ backgroundColor: "white", color: "black"  }} // Ensures white background
                         />
                     </div>
                 </div>
@@ -51,6 +52,7 @@ const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             className="form-input"
+                            style={{ backgroundColor: "white", color: "black"  }}
                         />
                     </div>
                 </div>

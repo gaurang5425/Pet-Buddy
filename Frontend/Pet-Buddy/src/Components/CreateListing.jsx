@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import axios from 'axios';
 import { FaUpload, FaTimes, FaCheck, FaExclamationCircle } from 'react-icons/fa';
 import './CreateListing.css';
 
 const CreateListing = () => {
     const navigate = useNavigate();
+    const { userData } = useUser();
     const [formData, setFormData] = useState({
         name: '',
-        ownerName: '',
+        ownerName: userData?.name || '',
         location: '',
         distance: '',
         description: '',
@@ -75,6 +77,16 @@ const CreateListing = () => {
         
         setProgress(Math.round((completedCount / totalFields) * 100));
     }, [formData]);
+
+    useEffect(() => {
+        // Update ownerName when userData changes
+        if (userData?.name) {
+            setFormData(prev => ({
+                ...prev,
+                ownerName: userData.name
+            }));
+        }
+    }, [userData]);
 
     const validateField = (name, value) => {
         switch (name) {
@@ -324,19 +336,12 @@ const CreateListing = () => {
                                 type="text"
                                 name="ownerName"
                                 value={formData.ownerName}
-                                onChange={handleChange}
-                                required
-                                placeholder="Enter owner name"
-                                className={validation.ownerName === 'valid' ? 'valid' : validation.ownerName ? 'invalid' : ''}
+                                readOnly
+                                className="valid"
+                                style={{ backgroundColor: '#f5f5f5' }}
                             />
-                            {validation.ownerName === 'valid' && <FaCheck className="validation-icon valid" />}
-                            {validation.ownerName && validation.ownerName !== 'valid' && (
-                                <FaExclamationCircle className="validation-icon invalid" />
-                            )}
+                            <FaCheck className="validation-icon valid" />
                         </div>
-                        {validation.ownerName && validation.ownerName !== 'valid' && (
-                            <span className="validation-message">{validation.ownerName}</span>
-                        )}
                     </div>
 
                     <div className="form-group">

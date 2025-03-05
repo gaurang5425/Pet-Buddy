@@ -1,5 +1,5 @@
 .contact-form-container-outer {
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -16,29 +16,64 @@
 }
 
 .contact-form-container h2 {
-    color: #000000;
+    color: #333;
     text-align: center;
     margin-bottom: 40px;
     font-size: 2.5rem;
-    font-weight: 600;
+    font-weight: 700;
     position: relative;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .contact-form-container h2::after {
     content: '';
     display: block;
-    width: 60px;
+    width: 80px;
     height: 4px;
-    background: #8865c1;
-    margin: 10px auto;
+    background: linear-gradient(135deg, #8865c1 0%, #7451b0 100%);
+    margin: 15px auto;
     border-radius: 2px;
 }
 
 .contact-form {
     background: white;
     padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    background: #f8f9fa;
+    padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    border: 1px solid #e9ecef;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-section-title {
+    color: #333;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #8865c1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: #8865c1;
+    border-radius: 2px;
 }
 
 .form-group {
@@ -48,163 +83,170 @@
 .form-group label {
     display: block;
     margin-bottom: 10px;
-    color: #000000;
+    color: #333;
+    background-color: white;
     font-weight: 500;
     font-size: 1.1rem;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
+.input-container input,
+.input-container select,
+.input-container textarea {
     width: 100%;
     padding: 14px;
     border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 15px;
     transition: all 0.3s ease;
-    background-color: #fff;
-    color: #000000;
+    background-color: white;
+    color: #333;
 }
 
-.form-group input:hover,
-.form-group select:hover,
-.form-group textarea:hover {
+.input-container input:hover,
+.input-container select:hover,
+.input-container textarea:hover {
     border-color: #8865c1;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.input-container input:focus,
+.input-container select:focus,
+.input-container textarea:focus {
     outline: none;
     border-color: #8865c1;
     box-shadow: 0 0 0 4px rgba(136, 101, 193, 0.1);
 }
 
-.disabled-input {
-    background-color: #f8f9fa;
-    cursor: not-allowed;
-    color: #000000;
-    border-color: #e9ecef;
-    opacity: 0.7;
+.input-container input.valid,
+.input-container select.valid {
+    border-color: #28a745;
+    background-color: #f8fff9;
 }
 
-.submit-button {
-    width: 100%;
-    padding: 16px;
-    background: #8865c1;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 20px;
+.input-container input.invalid,
+.input-container select.invalid {
+    border-color: #dc3545;
+    background-color: #fff5f5;
 }
 
-.submit-button:hover:not(:disabled) {
-    background: #7451b0;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(136, 101, 193, 0.2);
-}
-
-.submit-button:disabled {
-    background: #e9ecef;
-    color: #000000;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.error-message {
-    color: #dc3545;
-    background: #fff5f5;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    text-align: center;
-    border: 1px solid #ffebee;
-    font-weight: 500;
-}
-
-/* Remove browser default styles for select */
-.form-group select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 1.2em;
-    padding-right: 45px;
-}
-
-/* Placeholder color */
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: #000000;
-    opacity: 0.5;
-}
-
-/* Style the date picker */
-.form-group input[type="datetime-local"] {
-    position: relative;
-    color: #000000;
-    cursor: pointer;
-}
-
-.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    color: #000000;
-    opacity: 1;
-    cursor: pointer;
-}
-
-.form-group input[type="datetime-local"]::-moz-calendar-picker-indicator {
-    color: #000000;
-    opacity: 1;
-    cursor: pointer;
-}
-
-/* Custom calendar icon and positioning */
-.form-group .date-input-container {
-    position: relative;
-    width: 100%;
-}
-
-.form-group .date-input-container input {
-    padding-right: 45px;
-}
-
-.form-group .calendar-icon {
+.validation-icon {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #000000;
-    pointer-events: none;
+    font-size: 18px;
 }
 
-/* Add section headers */
-.form-section {
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f8f9fa;
+.validation-icon.valid {
+    color: #28a745;
 }
 
-.form-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+.validation-icon.invalid {
+    color: #dc3545;
 }
 
-.form-section-title {
-    color: #000000;
-    font-size: 1.3rem;
+.validation-message {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #dc3545;
+    padding-left: 5px;
+}
+
+.disabled-input {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed;
+    color: #6c757d;
+    border-color: #e9ecef;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #8865c1 0%, #7451b0 100%);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 15px;
+    color: #666;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Submit Button Styles */
+.submit-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #8865c1 0%, #7451b0 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #8865c1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(136, 101, 193, 0.3);
+}
+
+.submit-button:disabled {
+    background: #e9ecef;
+    color: #adb5bd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.submit-button.submitting {
+    opacity: 0.8;
+    cursor: wait;
+}
+
+/* Error Message Styles */
+.error-message {
+    background-color: #fff5f5;
+    color: #dc3545;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 15px;
+    border: 1px solid #ffebee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
     .contact-form-container {
         padding: 10px;
@@ -219,14 +261,31 @@
         margin-bottom: 30px;
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        font-size: 16px;
-        padding: 12px;
+    .form-section {
+        padding: 20px;
     }
 
-    .form-group label {
-        font-size: 1rem;
+    .form-section-title {
+        font-size: 1.2rem;
+    }
+
+    .input-container input,
+    .input-container select,
+    .input-container textarea {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .validation-icon {
+        font-size: 16px;
+    }
+
+    .validation-message {
+        font-size: 12px;
+    }
+
+    .submit-button {
+        padding: 14px;
+        font-size: 16px;
     }
 } 

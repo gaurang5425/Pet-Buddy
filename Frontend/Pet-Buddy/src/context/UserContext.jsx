@@ -15,6 +15,9 @@ export const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [pendingTotal, setPendingTotal] = useState(0);
+    const [completedTotal, setCompletedTotal] = useState(0);
+    const [bookingRequests, setBookingRequests] = useState([]);
 
     const fetchUserData = async (email) => {
         try {
@@ -27,7 +30,7 @@ export const UserProvider = ({ children }) => {
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (response.data) {
                 setUserData(response.data);
             }
@@ -48,12 +51,47 @@ export const UserProvider = ({ children }) => {
         }));
     };
 
+    const fetchBookingRequests = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/services/requests');
+            setBookingRequests(response.data);
+
+            // Calculate totals
+            const pending = response.data
+                .filter(req => req.status === 'pending')
+                .reduce((sum, req) => sum + req.price, 0);
+
+            const completed = response.data
+                .filter(req => req.status === 'DONE')
+                .reduce((sum, req) => sum + req.price, 0);
+
+            setPendingTotal(pending);
+            setCompletedTotal(completed);
+
+            console.log('Pending Total:', pending);
+            console.log('Completed Total:', completed);
+        } catch (err) {
+            console.error('Error fetching booking requests:', err);
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        if (userData) {
+            fetchBookingRequests();
+        }
+    }, [userData]);
+
     const value = {
         userData,
         loading,
         error,
         fetchUserData,
-        updateUserData
+        updateUserData,
+        pendingTotal,
+        completedTotal,
+        bookingRequests,
+        fetchBookingRequests
     };
 
     return (
@@ -63,4 +101,4 @@ export const UserProvider = ({ children }) => {
     );
 };
 
-export default UserContext; 
+export default UserContext;

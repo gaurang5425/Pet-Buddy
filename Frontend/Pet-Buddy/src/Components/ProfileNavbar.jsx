@@ -20,7 +20,6 @@ const ProfileNavbar = () => {
         { id: 1, name: 'Add New Listing', icon: '➕' },
         { id: 2, name: 'View My Listings', icon: '📋' },
         { id: 3, name: 'Booking Requests', icon: '📅' },
-        { id: 4, name: 'My Earnings', icon: '💰' },
     ];
 
     const userServices = [
@@ -67,14 +66,11 @@ const ProfileNavbar = () => {
                 case 'Booking Requests':
                     navigate('/booking-requests');
                     break;
-                case 'My Earnings':
-                    navigate('/earnings');
-                    break;
                 default:
                     break;
             }
         } else {
-            navigate('/PetSitters', { state: { selectedService: serviceName } });
+            navigate('/my-listings', { state: { selectedService: serviceName } });
         }
     };
 

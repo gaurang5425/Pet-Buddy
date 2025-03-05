@@ -61,6 +61,16 @@ public class PetServiceController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // Get pet service by exact owner name
+    @GetMapping("/owner/{ownerName}")
+    public ResponseEntity<PetService> getPetServiceByOwnerName(@PathVariable String ownerName) {
+        Optional<PetService> petService = petServiceService.getPetServiceByOwnerName(ownerName);
+        return petService
+                .map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
 
     // Get pet services by location
     @GetMapping("/location")
