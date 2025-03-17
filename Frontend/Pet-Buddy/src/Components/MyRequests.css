@@ -1,14 +1,14 @@
-.requests-container {
-    min-height: calc(100vh - 80px); /* Subtract navbar height */
+.my-req-container {
+    min-height: calc(100vh - 80px);
     padding: 40px 20px;
     max-width: 1200px;
     margin: 0 auto;
-    background-color: #f5f5f5; /* Light background color */
+    background-color: #f5f5f5;
     width: 100%;
     box-sizing: border-box;
 }
 
-.requests-header {
+.my-req-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,14 +17,14 @@
     padding: 0 20px;
 }
 
-.requests-header h1 {
+.my-req-header h1 {
     font-size: 24px;
     font-weight: 600;
     margin-left: 30px;
     color: #333;
 }
 
-.make-request-btn {
+.my-req-make-request-btn {
     background: white;
     color: #333;
     padding: 12px 24px;
@@ -36,12 +36,12 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.make-request-btn:hover {
+.my-req-make-request-btn:hover {
     background: #f8f8f8;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.request-card {
+.my-req-card {
     background: white;
     border-radius: 12px;
     padding: 20px;
@@ -55,39 +55,39 @@
     position: relative;
 }
 
-.request-card:not(.dropdown-active):hover {
+.my-req-card:not(.my-req-dropdown-active):hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.request-card.dropdown-active {
+.my-req-card.my-req-dropdown-active {
     transform: none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.request-info h2 {
+.my-req-info h2 {
     font-size: 20px;
     margin: 0 0 10px 0;
     color: #333;
 }
 
-.request-info p {
+.my-req-info p {
     color: #666;
     margin: 0;
     font-size: 14px;
 }
 
-.request-arrow {
+.my-req-arrow {
     color: #8865c1;
     display: flex;
     align-items: center;
 }
 
-.arrow-icon {
+.my-req-arrow-icon {
     font-size: 20px;
 }
 
-.status {
+.my-req-status {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 4px;
@@ -96,23 +96,23 @@
     margin-bottom: 10px;
 }
 
-.status.closed {
+.my-req-status.closed {
     background: #ffebee;
     color: #dc3545;
 }
 
-.status.active {
+.my-req-status.active {
     background: #e8f5e9;
     color: #28a745;
 }
 
-.request-actions {
+.my-req-actions {
     display: flex;
     gap: 10px;
     position: relative;
 }
 
-.action-btn {
+.my-req-action-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
@@ -124,48 +124,35 @@
     transition: all 0.2s;
 }
 
-.action-btn.view {
+.my-req-action-btn.view {
     background: #8865c1;
     color: white;
 }
 
-.action-btn.view:hover {
+.my-req-action-btn.view:hover {
     background: #7451b0;
 }
 
-.action-btn.delete {
+.my-req-action-btn.delete {
     background: #ffebee;
     color: #dc3545;
 }
 
-.action-btn.delete:hover {
+.my-req-action-btn.delete:hover {
     background: #dc3545;
     color: white;
 }
 
-.requests-list {
+.my-req-list {
     padding: 0 20px;
 }
 
-.request-card.closed {
+.my-req-card.closed {
     background: #fff;
     opacity: 0.8;
 }
 
-.request-card.closed .request-info h2 {
-    color: #666;
-}
-
-.request-card.closed .request-arrow {
-    color: #999;
-}
-
-.request-card.closed:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.three-dots-btn {
+.my-req-three-dots-btn {
     background: none;
     border: none;
     color: #666;
@@ -174,11 +161,11 @@
     transition: color 0.2s;
 }
 
-.three-dots-btn:hover {
+.my-req-three-dots-btn:hover {
     color: #333;
 }
 
-.dropdown-menu {
+.my-req-dropdown-menu {
     position: absolute;
     top: 100%;
     right: 0;
@@ -191,7 +178,7 @@
     margin-top: 5px;
 }
 
-.dropdown-menu button {
+.my-req-dropdown-menu button {
     width: 100%;
     padding: 12px 16px;
     border: none;
@@ -206,63 +193,26 @@
     transition: background-color 0.2s;
 }
 
-.dropdown-menu button:hover {
+.my-req-dropdown-menu button:hover {
     background-color: #f5f5f5;
 }
 
-.dropdown-menu button.cancel-btn {
+.my-req-cancel-btn {
     color: #dc3545;
 }
 
-.dropdown-menu button.cancel-btn:hover {
+.my-req-cancel-btn:hover {
     background-color: #ffebee;
 }
 
-@media (max-width: 768px) {
-    .requests-container {
-        padding: 20px 10px;
-    }
-
-    .requests-header {
-        padding: 0 10px;
-    }
-
-    .request-card {
-        padding: 15px;
-    }
-
-    .request-info h2 {
-        font-size: 18px;
-    }
-
-    .make-request-btn {
-        padding: 10px 20px;
-    }
-
-    .requests-list {
-        padding: 0 10px;
-    }
-
-    .request-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .request-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-}
-
-.request-header {
+.my-req-card-header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 10px;
 }
 
-.status-badge {
+.my-req-status-badge {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 4px;
@@ -270,50 +220,32 @@
     font-weight: 500;
 }
 
-.status-badge.active {
+.my-req-status-badge.active {
     background: #e8f5e9;
     color: #2e7d32;
 }
 
-.status-badge.closed {
+.my-req-status-badge.closed {
     background: #ffebee;
     color: #dc3545;
 }
 
-.status-badge.done {
+.my-req-status-badge.done {
     background: #e3f2fd;
     color: #1976d2;
 }
 
-.request-card.closed {
-    opacity: 0.8;
-}
-
-.request-card.done {
-    opacity: 0.9;
-}
-
-.request-card.closed .request-info h2,
-.request-card.done .request-info h2 {
-    color: #666;
-}
-
-.request-card.closed .request-arrow,
-.request-card.done .request-arrow {
-    color: #999;
-}
-
-.header-actions {
+.my-req-header-actions {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.filter-container {
+.my-req-filter-container {
     position: relative;
 }
 
-.filter-btn {
+.my-req-filter-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -327,12 +259,12 @@
     transition: all 0.2s;
 }
 
-.filter-btn:hover {
+.my-req-filter-btn:hover {
     background: #f8f8f8;
     border-color: #d0d0d0;
 }
 
-.filter-dropdown {
+.my-req-filter-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
@@ -345,7 +277,7 @@
     overflow: hidden;
 }
 
-.filter-option {
+.my-req-filter-option {
     width: 100%;
     padding: 12px 16px;
     border: none;
@@ -357,31 +289,17 @@
     transition: background-color 0.2s;
 }
 
-.filter-option:hover {
+.my-req-filter-option:hover {
     background-color: #f5f5f5;
 }
 
-.filter-option.active {
+.my-req-filter-option.my-req-active {
     background-color: #f0f0f0;
     color: #8865c1;
     font-weight: 500;
 }
 
-@media (max-width: 768px) {
-    .header-actions {
-        gap: 8px;
-    }
-
-    .filter-btn {
-        padding: 8px 12px;
-    }
-
-    .make-request-btn {
-        padding: 8px 12px;
-    }
-}
-
-.user-info {
+.my-req-user-info {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -390,7 +308,52 @@
     margin-bottom: 8px;
 }
 
-.user-info svg {
+.my-req-user-info svg {
     font-size: 16px;
     color: #8865c1;
+}
+
+@media (max-width: 768px) {
+    .my-req-container {
+        padding: 20px 10px;
+    }
+
+    .my-req-header {
+        padding: 0 10px;
+    }
+
+    .my-req-card {
+        padding: 15px;
+    }
+
+    .my-req-info h2 {
+        font-size: 18px;
+    }
+
+    .my-req-make-request-btn {
+        padding: 10px 20px;
+    }
+
+    .my-req-list {
+        padding: 0 10px;
+    }
+
+    .my-req-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .my-req-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .my-req-header-actions {
+        gap: 8px;
+    }
+
+    .my-req-filter-btn {
+        padding: 8px 12px;
+    }
 }
