@@ -54,7 +54,7 @@ const RequestSummary = () => {
             }
 
             const data = await response.json();
-            
+
             if (data.sessionUrl) {
                 // Store the request ID in localStorage for retrieval after payment
                 localStorage.setItem('paymentRequestId', requestData.id);
@@ -90,7 +90,7 @@ const RequestSummary = () => {
         <div className="request-summary-container">
             <div className="request-summary-content">
                 <h2>Request Summary</h2>
-                
+
                 <div className="summary-section">
                     <h3>Personal Information</h3>
                     <div className="summary-item">
@@ -157,7 +157,7 @@ const RequestSummary = () => {
                         <span className="label">Service Charge:</span>
                         <span className="value">₹{serviceCharge}</span>
                     </div>
-                    
+
                 </div>
 
                 <div className="action-buttons">
@@ -170,4 +170,4 @@ const RequestSummary = () => {
     );
 };
 
-export default RequestSummary; 
+export default RequestSummary;

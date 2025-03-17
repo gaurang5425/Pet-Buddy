@@ -274,14 +274,23 @@ const UserProfile = () => {
                     </div>
 
                     <div className="profile-actions">
-                        <button className="btn purple">
-                            <FaMoneyCheckAlt /> Payout Preferences
+                        <button className="btn purple" onClick={handleLogout}>
+                            <FaUserCircle /> Edit Profile
                         </button>
                         <button className="btn red" onClick={handleLogout}>
                             <FaSignOutAlt /> Logout
                         </button>
                         <button className="btn purple">
-                            <FaPlusCircle /> Create Listing
+                            <FaPlusCircle />
+                            {userData?.role ? (
+                                userData.role === 'OWNER' ? (
+                                    <span onClick={() => navigate('/create-listing')}>Create Listing</span>
+                                ) : (
+                                    <span onClick={() => navigate('/PetSitters')}>New Request</span>
+                                )
+                            ) : (
+                                'Not Selected ⚠️'
+                            )}
                         </button>
                         <button className="btn grey" disabled>
                             <FaTrash /> Delete Account

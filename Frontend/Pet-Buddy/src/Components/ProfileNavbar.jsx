@@ -70,7 +70,7 @@ const ProfileNavbar = () => {
                     break;
             }
         } else {
-            navigate('/my-listings', { state: { selectedService: serviceName } });
+            navigate('/PetSitters', { state: { selectedService: serviceName } });
         }
     };
 
@@ -78,7 +78,8 @@ const ProfileNavbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    <img src={logo} alt="PetBuddy" className="logo-image" />
+                    {/*<img src={logo} alt="PetBuddy" className="logo-image" />*/}
+                    Logo
                 </Link>
 
                 <div className="nav-menu">
