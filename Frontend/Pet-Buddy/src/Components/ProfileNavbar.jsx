@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import { FaUserCircle, FaChevronDown } from 'react-icons/fa';
 import './ProfileNavbar.css';
-import logo from '../assets/img.png';
+import logo from '../assets/logo101.png';
 import defaultProfileImg from '../assets/pro1.jpg';
 
 const ProfileNavbar = () => {
@@ -78,8 +78,7 @@ const ProfileNavbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    {/*<img src={logo} alt="PetBuddy" className="logo-image" />*/}
-                    Logo
+                    <img src={logo} alt="PetBuddy" className="logo-image" />
                 </Link>
 
                 <div className="nav-menu">

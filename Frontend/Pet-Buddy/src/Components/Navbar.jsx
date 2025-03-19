@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import { FaGlobe, FaChevronDown, FaCheck, FaUserCircle } from 'react-icons/fa';
 import './Navbar.css';
-import logo from '../assets/img.png'; // Ensure your logo is correctly placed
+import logo from '../assets/logo101.png'; // Ensure your logo is correctly placed
 import defaultProfileImg from '../assets/pro1.jpg';
 
 const Navbar = () => {
@@ -82,46 +82,11 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    {/*<img src={logo} alt="PetBuddy" className="logo-image" />*/}
-                    Logo
+                    <img src={logo} alt="PetBuddy" className="logo-image" />
                 </Link>
 
                 <div className="nav-menu">
                     {renderNavLinks()}
-
-                    <div className="language-selector">
-                        <button 
-                            className="language-button" 
-                            onClick={() => setIsOpen(!isOpen)}
-                        >
-                            <FaGlobe className="globe-icon" />
-                            <span className="selected-language">
-                                {languages.find(lang => lang.code === selectedLang)?.icon}
-                            </span>
-                            <FaChevronDown className={`arrow-icon ${isOpen ? 'open' : ''}`} />
-                        </button>
-
-                        {isOpen && (
-                            <div className="language-dropdown">
-                                {languages.map((lang) => (
-                                    <button
-                                        key={lang.code}
-                                        className="language-option"
-                                        onClick={() => {
-                                            setSelectedLang(lang.code);
-                                            setIsOpen(false);
-                                        }}
-                                    >
-                                        <span className="language-icon">{lang.icon}</span>
-                                        <span className="language-name">{lang.name}</span>
-                                        {selectedLang === lang.code && (
-                                            <FaCheck className="check-icon" />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
 
                     {userData ? (
                         <div className="user-profile" ref={menuRef}>
