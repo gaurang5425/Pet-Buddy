@@ -21,6 +21,17 @@ const Login = () => {
         console.log("Email login attempted with:", { email, password });
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Check for admin credentials
+        if (email === 'admin@gmail.com' && password === 'admin') {
+            // Redirect to admin panel
+            navigate('/admin');
+            return;
+        }
+    };
+
     return (
         <div className="login-container">
             <h2>Welcome Back!</h2>
@@ -57,7 +68,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <button type="submit" className="login-button">
+                <button type="submit" className="login-button" onClick={handleSubmit}>
                     Login
                 </button>
             </form>

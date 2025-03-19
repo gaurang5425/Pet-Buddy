@@ -124,6 +124,8 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
     padding: 0 20px;
 }
 
@@ -397,5 +399,30 @@
 
     [data-tooltip]:hover::before {
         max-width: 160px;
+    }
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #9173ac;
+    margin-bottom: 1.5rem;
+}
+
+.no-listings-message {
+    text-align: center;
+    width: 800px;
+    margin-left: 150px;
+    margin-top: 30px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 3rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .no-listings-message {
+        margin: 1rem auto;
+        padding: 2rem;
+        max-width: 100%;
     }
 }

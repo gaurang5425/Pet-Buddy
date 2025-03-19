@@ -21,17 +21,21 @@ const BookingRequests = () => {
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                console.log('Fetching requests...');
-                const response = await axios.get(`http://localhost:8080/api/services/requests`);
-                console.log('API Response:', response.data);
+                if (!userData?.name) {
+                    setRequests([]);
+                    setLoading(false);
+                    return;
+                }
 
-                if (!response.data || response.data.length === 0) {
-                    console.log('No data received from API');
+                const response = await axios.get(`http://localhost:8080/api/services/requests/owner/${encodeURIComponent(userData.name)}`);
+                const data = response.data;
+
+                if (!data || data.length === 0) {
                     setRequests([]);
                     return;
                 }
 
-                const transformedRequests = response.data.map(request => ({
+                const transformedRequests = data.map(request => ({
                     id: request.id,
                     service: request.serviceSelected,
                     status: request.status,
@@ -52,14 +56,11 @@ const BookingRequests = () => {
                     price: request.price
                 }));
 
-                console.log('Transformed Requests:', transformedRequests);
                 setRequests(transformedRequests);
-
-                // Update context with the new data
                 fetchBookingRequests();
             } catch (err) {
                 console.error('Error fetching requests:', err);
-                setError('Failed to load requests. Please try again later.');
+                // Set empty requests array for 404 or any other error
                 setRequests([]);
             } finally {
                 setLoading(false);
@@ -67,21 +68,20 @@ const BookingRequests = () => {
         };
 
         fetchRequests();
-    }, [fetchBookingRequests]);
-
-    const handleView = (requestId) => {
-        navigate(`/request/${requestId}`);
-    };
-
-    const filteredRequests = requests.filter(request => request.status === activeTab);
+    }, [userData?.name, fetchBookingRequests]);
 
     if (loading) {
-        return <div className="loading">Loading requests...</div>;
+        return (
+            <div className="my-listings-container-loading">
+                <div className="loading-spinner">
+                    <div className="spinner"></div>
+                    <p>Loading your booking requests...</p>
+                </div>
+            </div>
+        );
     }
 
-    if (error) {
-        return <div className="error-message">{error}</div>;
-    }
+    const filteredRequests = requests.filter(request => request.status === activeTab);
 
     return (
         <div className="booking-requests-container">
@@ -103,33 +103,43 @@ const BookingRequests = () => {
                 </div>
             </div>
 
+            {requests.length > 0 && (
             <div className="earnings-overview">
                 <div className="earnings-card">
                     <FaWallet className="card-icon" />
                     <div className="card-content">
                         <h3>Total Earnings</h3>
-                        <p className="amount">₹{completedTotal + pendingTotal}</p>
+                        <p className="amount">₹{(completedTotal + pendingTotal).toFixed(2)}</p>
                     </div>
                 </div>
                 <div className="earnings-card">
                     <FaCheckCircle className="card-icon" />
                     <div className="card-content">
                         <h3>Completed Payments</h3>
-                        <p className="amount">₹{completedTotal}</p>
+                        <p className="amount">₹{completedTotal.toFixed(2)}</p>
                     </div>
                 </div>
                 <div className="earnings-card">
                     <FaClock className="card-icon" />
                     <div className="card-content">
                         <h3>Pending Payments</h3>
-                        <p className="amount">₹{pendingTotal}</p>
+                        <p className="amount">₹{pendingTotal.toFixed(2)}</p>
                     </div>
                 </div>
             </div>
+            )}
 
             <div className="requests-list">
-                {filteredRequests.length > 0 ? (
+                {requests.length === 0 ? (
+                    <div className="no-listings-message">
+                        <FaPaw className="empty-icon" />
+                        <h2>No Booking Requests Yet</h2>
+                        <p>Start receiving booking requests when customers book your services!<br />
+                            They will appear here once customers make bookings.</p>
+                    </div>
+                ) : (
                     filteredRequests.map((request) => (
+
                         <div
                             key={request.id}
                             className={`request-card ${request.status.toLowerCase()}`}
@@ -184,13 +194,6 @@ const BookingRequests = () => {
                             </div>
                         </div>
                     ))
-                ) : (
-                    <div className="no-requests-message">
-                        <p>No {activeTab === 'DONE' ? 'Completed' : 'Pending'} booking requests at the moment.</p>
-                        {activeTab === 'pending' && (
-                            <p>New booking requests will appear here!</p>
-                        )}
-                    </div>
                 )}
             </div>
         </div>

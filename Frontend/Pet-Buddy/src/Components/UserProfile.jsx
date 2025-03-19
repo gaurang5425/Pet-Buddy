@@ -6,7 +6,7 @@ import { useUser } from '../context/UserContext';
 import { FaSignOutAlt, FaPlusCircle, FaTrash, FaMoneyCheckAlt, FaUserCircle, FaCamera } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import RoleSelection from './RoleSelection';
-import defaultProfileImg from '../assets/pro1.jpg';
+import defaultProfileImg from '../assets/default.jpeg';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;

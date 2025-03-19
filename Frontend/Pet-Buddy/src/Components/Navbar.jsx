@@ -16,14 +16,6 @@ const Navbar = () => {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef();
 
-    const languages = [
-        { code: 'en', name: 'English', icon: '🇺🇸' },
-        { code: 'es', name: 'Español', icon: '🇪🇸' },
-        { code: 'fr', name: 'Français', icon: '🇫🇷' },
-        { code: 'de', name: 'Deutsch', icon: '🇩🇪' },
-        { code: 'hi', name: 'हिंदी', icon: '🇮🇳' }
-    ];
-
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {

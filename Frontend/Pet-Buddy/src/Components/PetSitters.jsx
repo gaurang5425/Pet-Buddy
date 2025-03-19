@@ -145,7 +145,7 @@ const PetSitters = () => {
                     <h2>Compare <span className="pet-sitters-highlight">Pet Sitters</span> services</h2>
                     <h2>near you for the best Pet Sitters prices</h2>
                     <p>Get the 5 best nearby Pet Sitters with just one request.</p>
-                    <button className="pet-sitters-quote-button">Get 5 Best Quotes</button>
+                    <button className="pet-sitters-quote-button" disabled>Get 5 Best Quotes</button>
                 </div>
 
                 <div className="pet-sitters-search-form">

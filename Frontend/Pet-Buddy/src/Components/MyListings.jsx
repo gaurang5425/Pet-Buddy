@@ -32,7 +32,12 @@ const MyListings = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/pet-services');
+                if (!userData?.name) {
+                    setError('User information not available');
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:8080/api/pet-services/ownername/${encodeURIComponent(userData.name)}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch listings');
                 }
@@ -46,7 +51,7 @@ const MyListings = () => {
         };
 
         fetchListings();
-    }, []);
+    }, [userData?.name]);
 
     if (loading) {
         return (
