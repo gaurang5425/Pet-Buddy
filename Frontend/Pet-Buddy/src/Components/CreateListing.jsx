@@ -40,8 +40,7 @@ const CreateListing = () => {
         'Dog Walking',
         'Pet Daycare',
         'Pet Grooming',
-        'Pet Taxi',
-        'Pet Training'
+        'Pet Taxi'
     ];
 
     const petTypes = [
@@ -132,38 +131,12 @@ const CreateListing = () => {
         }));
     };
 
-    const handleMainImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                setError('Image size should be less than 5MB');
-                return;
-            }
-
-            setFormData(prev => ({
-                ...prev,
-                image: file
-            }));
-
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewImage(reader.result);
-                setFormData(prev => ({
-                    ...prev,
-                    base64Image: reader.result.split(',')[1]
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleMoreImagesChange = (e) => {
+    const handleImagesChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
-            // Validate total number of images (max 5)
-            if (files.length > 5) {
-                setError('You can upload maximum 5 additional images');
+            // Validate total number of images (max 6: 1 main + 5 additional)
+            if (files.length > 6) {
+                setError('You can upload maximum 6 images (1 main + 5 additional)');
                 return;
             }
 
@@ -174,24 +147,36 @@ const CreateListing = () => {
                 return;
             }
 
-            setFormData(prev => ({
-                ...prev,
-                moreImages: files
-            }));
+            // First image becomes main image, rest go to additional images
+            const [mainFile, ...additionalFiles] = files;
 
+            // Handle main image
+            const mainReader = new FileReader();
+            mainReader.onloadend = () => {
+                setPreviewImage(mainReader.result);
+                setFormData(prev => ({
+                    ...prev,
+                    image: mainFile,
+                    base64Image: mainReader.result.split(',')[1]
+                }));
+            };
+            mainReader.readAsDataURL(mainFile);
+
+            // Handle additional images
             const newPreviews = [];
             const newBase64Images = [];
 
-            files.forEach(file => {
+            additionalFiles.forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     newPreviews.push(reader.result);
                     newBase64Images.push(reader.result.split(',')[1]);
-                    
-                    if (newPreviews.length === files.length) {
+
+                    if (newPreviews.length === additionalFiles.length) {
                         setPreviewMoreImages(newPreviews);
                         setFormData(prev => ({
                             ...prev,
+                            moreImages: additionalFiles,
                             base64MoreImages: newBase64Images
                         }));
                     }
@@ -202,12 +187,29 @@ const CreateListing = () => {
     };
 
     const removeMainImage = () => {
-        setFormData(prev => ({
-            ...prev,
-            image: null,
-            base64Image: ''
-        }));
-        setPreviewImage(null);
+        if (previewMoreImages.length > 0) {
+            // Move first additional image to main image
+            const [newMain, ...restImages] = previewMoreImages;
+            const [newMainFile, ...restFiles] = formData.moreImages;
+            const [newMainBase64, ...restBase64] = formData.base64MoreImages;
+
+            setPreviewImage(newMain);
+            setPreviewMoreImages(restImages);
+            setFormData(prev => ({
+                ...prev,
+                image: newMainFile,
+                base64Image: newMainBase64,
+                moreImages: restFiles,
+                base64MoreImages: restBase64
+            }));
+        } else {
+            setPreviewImage(null);
+            setFormData(prev => ({
+                ...prev,
+                image: null,
+                base64Image: ''
+            }));
+        }
     };
 
     const removeMoreImage = (index) => {
@@ -477,41 +479,24 @@ const CreateListing = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Main Service Image</label>
+                        <label>Service Images</label>
                         <div className="image-upload-container">
-                            {previewImage ? (
-                                <div className="image-preview">
-                                    <img src={previewImage} alt="Preview" />
-                                    <button
-                                        type="button"
-                                        className="remove-image"
-                                        onClick={removeMainImage}
-                                    >
-                                        <FaTimes />
-                                    </button>
-                                </div>
-                            ) : (
-                                <label className="image-upload-label">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleMainImageChange}
-                                        required
-                                        style={{ display: 'none' }}
-                                    />
-                                    <FaUpload className="upload-icon" />
-                                    <span>Upload Main Image</span>
-                                </label>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Additional Images</label>
-                        <div className="more-images-container">
-                            <div className="more-images-grid">
+                            <div className="images-grid">
+                                {previewImage && (
+                                    <div className="main-image-preview">
+                                        <img src={previewImage} alt="Main Preview" />
+                                        <span className="main-image-label">Main Image</span>
+                                        <button
+                                            type="button"
+                                            className="remove-image"
+                                            onClick={removeMainImage}
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                )}
                                 {previewMoreImages.map((preview, index) => (
-                                    <div key={index} className="more-image-preview">
+                                    <div key={index} className="image-preview">
                                         <img src={preview} alt={`Additional ${index + 1}`} />
                                         <button
                                             type="button"
@@ -522,18 +507,20 @@ const CreateListing = () => {
                                         </button>
                                     </div>
                                 ))}
+                                <label className="image-upload-label">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImagesChange}
+                                        multiple
+                                        required={!previewImage}
+                                        style={{ display: 'none' }}
+                                    />
+                                    <FaUpload className="upload-icon" />
+                                    <span> Upload Images</span>
+                                    <small> First image will be the main image</small>
+                                </label>
                             </div>
-                            <label className="image-upload-label">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleMoreImagesChange}
-                                    multiple
-                                    style={{ display: 'none' }}
-                                />
-                                <FaUpload className="upload-icon" />
-                                <span>Add More Images</span>
-                            </label>
                         </div>
                     </div>
 
