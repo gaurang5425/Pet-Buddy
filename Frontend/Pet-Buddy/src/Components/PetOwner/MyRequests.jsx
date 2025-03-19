@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { FaChevronRight, FaEllipsisV, FaEdit, FaEye, FaBan, FaFilter, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MyRequests.css';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../../context/UserContext.jsx';
 
 const MyRequests = () => {
     const { currentUser } = useAuth();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../../context/UserContext.jsx';
 import axios from 'axios';
 import { FaUpload, FaTimes, FaCheck, FaExclamationCircle } from 'react-icons/fa';
 import './CreateListing.css';

@@ -13,7 +13,7 @@ public interface PetServiceRepository extends JpaRepository<PetService, Long> {
     // Find by exact name
     Optional<PetService> findByName(String name);
 
-    Optional<PetService> findByOwnerName(String ownerName);
+    List<PetService> findByOwnerName(String name);
 
     List<PetService> findByLocationContainingIgnoreCase(String location);
     

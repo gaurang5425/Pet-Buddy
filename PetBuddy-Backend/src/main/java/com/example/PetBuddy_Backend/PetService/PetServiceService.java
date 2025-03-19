@@ -63,8 +63,8 @@ public class PetServiceService {
         return petServiceRepository.findByPetType(petType);
     }
 
-    public Optional<PetService> getPetServiceByOwnerName(String ownerName) {
-        return petServiceRepository.findByOwnerName(ownerName);
+    public List<PetService> getPetServiceByOwnerName(String name) {
+        return petServiceRepository.findByOwnerName(name);
     }
 
 

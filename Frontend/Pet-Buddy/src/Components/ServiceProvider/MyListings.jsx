@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../../context/UserContext.jsx';
 import { Link } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaBed, FaHome, FaDog, FaBath, FaCar, FaPaw } from 'react-icons/fa';
 import './MyListings.css';

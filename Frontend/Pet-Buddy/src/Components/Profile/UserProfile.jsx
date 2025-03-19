@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./UserProfile.css";
 import axios from "axios";
-import { useAuth } from '../context/AuthContext';
-import { useUser } from '../context/UserContext';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useUser } from '../../context/UserContext.jsx';
 import { FaSignOutAlt, FaPlusCircle, FaTrash, FaMoneyCheckAlt, FaUserCircle, FaCamera } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import RoleSelection from './RoleSelection';
-import defaultProfileImg from '../assets/default.jpeg';
+import RoleSelection from '../Login/RoleSelection.jsx';
+import defaultProfileImg from '../../assets/default.jpeg';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;

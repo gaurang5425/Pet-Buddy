@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './LoginNavbar.css';
-import logo from '../assets/logo101.png'; // Ensure your logo is correctly placed
+import logo from '../../assets/logo101.png'; // Ensure your logo is correctly placed
 
 const LoginNavbar = () => {
     return (

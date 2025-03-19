@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useUser } from '../context/UserContext';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useUser } from '../../context/UserContext.jsx';
 import { FaGlobe, FaChevronDown, FaCheck, FaUserCircle } from 'react-icons/fa';
 import './Navbar.css';
-import logo from '../assets/logo101.png'; // Ensure your logo is correctly placed
-import defaultProfileImg from '../assets/pro1.jpg';
+import logo from '../../assets/logo101.png'; // Ensure your logo is correctly placed
+import defaultProfileImg from '../../assets/pro1.jpg';
 
 const Navbar = () => {
     const { logout } = useAuth();

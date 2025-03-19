@@ -1,5 +1,5 @@
 import React from "react";
-import "./Signup_Login_Footer.css";
+import "./Signup_login_Footer.css";
 import { FaEnvelope } from "react-icons/fa";
 
 const Signup_Login_Footer = () => {

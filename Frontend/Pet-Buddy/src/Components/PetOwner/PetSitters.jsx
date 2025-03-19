@@ -3,11 +3,11 @@ import axios from 'axios';
 import './PetSitters.css';
 import { FaBed, FaHome, FaDog, FaBath, FaCar, FaPaw, FaStar, FaCalendar } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import id from '../assets/id.png';
-import phoneBadge from '../assets/mobile.png';
-import emailBadge from '../assets/email.png';
-import documentBadge from '../assets/certification.png';
-import verifiedBadge from '../assets/sitter_intro_verified.png';
+import id from '../../assets/id.png';
+import phoneBadge from '../../assets/mobile.png';
+import emailBadge from '../../assets/email.png';
+import documentBadge from '../../assets/certification.png';
+import verifiedBadge from '../../assets/sitter_intro_verified.png';
 
 const PetSitters = () => {
     const [location, setLocation] = useState("");

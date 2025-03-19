@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useUser } from '../context/UserContext';
+import { useUser } from '../../context/UserContext.jsx';
 import { FaUser, FaPaw, FaMoneyBillWave, FaShieldAlt, FaCog, FaHandshake, FaCalendarAlt, FaQuestionCircle } from 'react-icons/fa';
 import "./HelpCenter.css";
 
