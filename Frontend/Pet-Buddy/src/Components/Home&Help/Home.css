@@ -1,102 +1,218 @@
-/* App.css */
-.App {
-    font-family: Arial, sans-serif;
+.first-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf3 100%);
 }
 
-/* Hero Section */
-.hero {
-    background-color: #f1f1f1;
-    padding: 60px 20px;
-    text-align: center;
+.first-welcome {
+    min-height: 100vh;
+    display: flex;
+    margin-top: 40px;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+    url('path-to-your-pet-image.jpg') center/cover;
+    position: relative;
+    overflow: hidden;
 }
 
-.hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+.first-services-grid, .first-benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin-bottom: 0;
+    padding: 0 20px;
 }
 
-.hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
+.first-service-card{
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(136, 101, 193, 0.1);
+    transition: all 0.4s ease;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.cta-button {
-    padding: 12px 25px;
-    font-size: 1.1rem;
-    color: white;
-    background-color: #5cb85c;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+.first-benefit-card {
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(136, 101, 193, 0.1);
+    transition: all 0.4s ease;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.first-service-features {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
 }
 
-.cta-button:hover {
-    background-color: #4cae4c;
+.first-service-features li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 0;
+    color: #666;
 }
 
-/* Services Section */
-.services {
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #fff;
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .first-services-grid, .first-benefits-grid {
+        padding: 0 40px;
+        gap: 20px;
+    }
 }
 
-.services h2 {
-    font-size: 2rem;
+@media (max-width: 992px) {
+    .first-services-grid, .first-benefits-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+}
+
+.first-welcome::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, #8865c130 0%, transparent 50%);
+    animation: rotate 30s linear infinite;
+}
+
+.first-welcome-content {
+    max-width: 1000px;
+    padding: 40px;
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(136, 101, 193, 0.1);
+}
+
+.first-welcome-title {
+    font-size: 4.5rem;
     margin-bottom: 30px;
+    background: linear-gradient(45deg, #8865c1, #b8d8f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeInUp 1s ease;
 }
 
-.services-grid {
+.first-welcome-subtitle {
+    font-size: 1.8rem;
+    margin-bottom: 50px;
+    color: #666;
+    animation: fadeInUp 1.2s ease;
+}
+
+.first-btn-primary, .first-btn-secondary {
+    padding: 18px 45px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.first-btn-primary {
+    background: #8865c1;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(136, 101, 193, 0.3);
+}
+
+.first-btn-secondary {
+    background: #ffffff;
+    color: #8865c1;
+    border: 2px solid #8865c1;
+}
+
+.first-btn-primary:hover, .first-btn-secondary:hover {
+    transform: translateY(-3px) scale(1.02);
+    background-color: #9d87c1;
+    color: white;
+}
+
+.first-services, .first-benefits {
+    padding: 100px 40px;
+    position: relative;
+}
+
+.first-services {
+    background: #ffffff;
+}
+
+.first-service-card, .first-benefit-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(136, 101, 193, 0.1);
+    transition: all 0.4s ease;
+}
+
+.first-service-card:hover, .first-benefit-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(136, 101, 193, 0.15);
+    border-color: #8865c1;
+}
+
+.first-service-icon, .benefit-icon {
+    font-size: 3rem;
+    color: #8865c1;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.first-section-title {
+    font-size: 3rem;
+    margin-bottom: 40px;
+    margin-top: 0;
+    position: relative;
+    color: #333;
+    text-align: center;
     display: flex;
     justify-content: center;
-    gap: 30px;
+    align-items: center;
+    width: 100%;
 }
 
-.service-card {
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 250px;
-    text-align: center;
+.first-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #8865c1, #b8d8f0);
+    border-radius: 2px;
 }
 
-.service-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.service-card p {
-    font-size: 1rem;
-}
-
-/* Testimonials Section */
-.testimonials {
-    background-color: #f7f7f7;
-    padding: 40px 20px;
-    text-align: center;
-}
-
-.testimonials h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-}
-
-.testimonial-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    width: 60%;
-    max-width: 600px;
-    font-size: 1.2rem;
-    color: #555;
-}
-
-.testimonial-card strong {
-    display: block;
-    margin-top: 10px;
-    font-size: 1.1rem;
-    color: #333;
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
