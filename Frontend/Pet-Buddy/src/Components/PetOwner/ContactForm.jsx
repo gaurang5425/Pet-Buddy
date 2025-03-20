@@ -20,7 +20,7 @@ const ContactForm = () => {
         additionalInfo: '',
         startDate: '',
         price: location.state?.price || 0,
-        status: 'pending'
+        status: 'PENDING'
     });
 
     const [error, setError] = useState('');
@@ -70,8 +70,13 @@ const ContactForm = () => {
                 return value !== '' ? 'valid' : 'Please select a pet size';
             case 'startDate':
                 const selectedDate = new Date(value);
-                const now = new Date();
-                return selectedDate > now ? 'valid' : 'Please select a future date';
+                const currentDate = new Date();
+                // Remove any milliseconds for accurate comparison
+                currentDate.setMilliseconds(0);
+                selectedDate.setMilliseconds(0);
+                return selectedDate > currentDate ?
+                    'valid' :
+                    'Please select a future date and time';
             default:
                 return 'valid';
         }
@@ -322,15 +327,18 @@ const ContactForm = () => {
                         <h3 className="form-section-title">Booking Details</h3>
                         <div className="form-group">
                             <label>Start Date *</label>
-                            <div className="input-container">
+                            <div className="input-container date-input-container">
                                 <input
                                     type="datetime-local"
                                     name="startDate"
                                     value={formData.startDate}
                                     onChange={handleChange}
                                     required
-                                    className={validation.startDate === 'valid' ? 'valid' : validation.startDate ? 'invalid' : ''}
+                                    min={new Date().toISOString().slice(0, 16)}
+                                    className={`date-input ${validation.startDate === 'valid' ? 'valid' : validation.startDate ? 'invalid' : ''}`}
+                                    onFocus={(e) => e.target.showPicker()}
                                 />
+                                <FaCalendar className="calendar-icon" />
                                 {validation.startDate === 'valid' && <FaCheck className="validation-icon valid" />}
                                 {validation.startDate && validation.startDate !== 'valid' && (
                                     <FaExclamationCircle className="validation-icon invalid" />
