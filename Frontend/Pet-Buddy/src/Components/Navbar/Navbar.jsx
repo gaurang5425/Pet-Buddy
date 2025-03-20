@@ -29,15 +29,27 @@ const Navbar = () => {
         };
     }, []);
 
-    const handleLogout = () => {
-        // Clear user context
-        updateUserData(null);
-        // Clear auth context
-        logout();
-        // Close menu
-        setShowUserMenu(false);
-        // Redirect to backend logout endpoint
-        window.location.href = 'http://localhost:8080/logout';
+    const handleLogout = async () => {
+        try {
+            // Clear all localStorage data
+            localStorage.clear();
+
+            // Reset all context states
+            updateUserData(null);
+            logout();
+            setShowUserMenu(false);
+
+            // Wait for the backend logout
+            await axios.get('http://localhost:8080/logout', { withCredentials: true });
+
+            // Force navigate to login page
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Force logout anyway
+            localStorage.clear();
+            window.location.href = '/login';
+        }
     };
 
     const renderNavLinks = () => {

@@ -12,12 +12,53 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState(() => {
+        const saved = localStorage.getItem('userData');
+        return saved ? JSON.parse(saved) : null;
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [pendingTotal, setPendingTotal] = useState(0);
-    const [completedTotal, setCompletedTotal] = useState(0);
-    const [bookingRequests, setBookingRequests] = useState([]);
+    const [pendingTotal, setPendingTotal] = useState(() => {
+        const saved = localStorage.getItem('pendingTotal');
+        return saved ? parseFloat(saved) : 0;
+    });
+    const [completedTotal, setCompletedTotal] = useState(() => {
+        const saved = localStorage.getItem('completedTotal');
+        return saved ? parseFloat(saved) : 0;
+    });
+    const [bookingRequests, setBookingRequests] = useState(() => {
+        const saved = localStorage.getItem('bookingRequests');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    // Save to localStorage whenever state changes
+    useEffect(() => {
+        if (userData) {
+            localStorage.setItem('userData', JSON.stringify(userData));
+        } else {
+            localStorage.removeItem('userData');
+            localStorage.removeItem('pendingTotal');
+            localStorage.removeItem('completedTotal');
+            localStorage.removeItem('bookingRequests');
+            setPendingTotal(0);
+            setCompletedTotal(0);
+            setBookingRequests([]);
+            setError(null);
+        }
+    }, [userData]);
+
+
+    useEffect(() => {
+        localStorage.setItem('pendingTotal', pendingTotal.toString());
+    }, [pendingTotal]);
+
+    useEffect(() => {
+        localStorage.setItem('completedTotal', completedTotal.toString());
+    }, [completedTotal]);
+
+    useEffect(() => {
+        localStorage.setItem('bookingRequests', JSON.stringify(bookingRequests));
+    }, [bookingRequests]);
 
     const fetchUserData = async (email) => {
         try {
@@ -45,10 +86,20 @@ export const UserProvider = ({ children }) => {
     };
 
     const updateUserData = (newData) => {
-        setUserData(prevData => ({
-            ...prevData,
-            ...newData
-        }));
+        if (newData === null) {
+            // Clear all data when logging out
+            setUserData(null);
+            setPendingTotal(0);
+            setCompletedTotal(0);
+            setBookingRequests([]);
+            setError(null);
+            localStorage.clear();
+        } else {
+            setUserData(prevData => ({
+                ...prevData,
+                ...newData
+            }));
+        }
     };
 
     const fetchBookingRequests = async () => {

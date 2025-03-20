@@ -153,17 +153,6 @@ const HelpCenter = () => {
                     </div>
                 ))}
             </div>
-
-            {/* Footer */}
-            <footer className="help-footer">
-                <div className="footer-content">
-                    <p>Need more help?</p>
-                    <div className="footer-buttons">
-                        <button className="contact-support-btn">Contact Support</button>
-                        <button className="email-support-btn">Email Support</button>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };

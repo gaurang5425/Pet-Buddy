@@ -8,13 +8,13 @@ import './BookingRequests.css';
 const BookingRequests = () => {
     const { userData, pendingTotal, completedTotal, fetchBookingRequests } = useUser();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('pending');
+    const [activeTab, setActiveTab] = useState('PENDING');
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const statusMap = {
-        'pending': 'Pending',
+        'PENDING': 'Pending',
         'DONE': 'Completed'
     };
 
@@ -30,11 +30,16 @@ const BookingRequests = () => {
                 const response = await axios.get(`http://localhost:8080/api/services/requests/owner/${encodeURIComponent(userData.name)}`);
                 const data = response.data;
 
-                if (!data || data.length === 0) {
-                    setRequests([]);
-                    return;
-                }
+                // Calculate totals directly from API response
+                const pendingAmount = data
+                    .filter(request => request.status === 'PENDING')
+                    .reduce((sum, request) => sum + (request.price || 0), 0);
 
+                const completedAmount = data
+                    .filter(request => request.status === 'DONE')
+                    .reduce((sum, request) => sum + (request.price || 0), 0);
+
+                // Transform the requests
                 const transformedRequests = data.map(request => ({
                     id: request.id,
                     service: request.serviceSelected,
@@ -57,11 +62,19 @@ const BookingRequests = () => {
                 }));
 
                 setRequests(transformedRequests);
-                fetchBookingRequests();
+
+                // Update the earnings in UserContext
+                await fetchBookingRequests({
+                    pendingTotal: pendingAmount,
+                    completedTotal: completedAmount
+                });
             } catch (err) {
                 console.error('Error fetching requests:', err);
-                // Set empty requests array for 404 or any other error
-                setRequests([]);
+                if (err.response?.status === 404) {
+                    setRequests([]);  // Set empty array for 404
+                } else {
+                    setError('Failed to load booking requests. Please try again.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -70,18 +83,15 @@ const BookingRequests = () => {
         fetchRequests();
     }, [userData?.name, fetchBookingRequests]);
 
+    const filteredRequests = requests.filter(request => request.status === activeTab);
+
     if (loading) {
-        return (
-            <div className="my-listings-container-loading">
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                    <p>Loading your booking requests...</p>
-                </div>
-            </div>
-        );
+        return <div className="loading">Loading requests...</div>;
     }
 
-    const filteredRequests = requests.filter(request => request.status === activeTab);
+    if (error) {
+        return <div className="error-message">{error}</div>;
+    }
 
     return (
         <div className="booking-requests-container">
@@ -89,8 +99,8 @@ const BookingRequests = () => {
                 <h1>Booking Requests</h1>
                 <div className="requests-tabs">
                     <button
-                        className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('pending')}
+                        className={`tab-btn ${activeTab === 'PENDING' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('PENDING')}
                     >
                         Pending
                     </button>
@@ -104,33 +114,40 @@ const BookingRequests = () => {
             </div>
 
             {requests.length > 0 && (
-            <div className="earnings-overview">
-                <div className="earnings-card">
-                    <FaWallet className="card-icon" />
-                    <div className="card-content">
-                        <h3>Total Earnings</h3>
-                        <p className="amount">₹{(completedTotal + pendingTotal).toFixed(2)}</p>
+                <div className="earnings-overview">
+                    <div className="earnings-card">
+                        <FaWallet className="card-icon" />
+                        <div className="card-content">
+                            <h3>Total Earnings</h3>
+                            <p className="amount">₹{(requests.reduce((sum, req) => sum + (req.price || 0), 0)).toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="earnings-card">
+                        <FaCheckCircle className="card-icon" />
+                        <div className="card-content">
+                            <h3>Completed Payments</h3>
+                            <p className="amount">₹{(requests.filter(req => req.status === 'DONE')
+                                .reduce((sum, req) => sum + (req.price || 0), 0)).toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="earnings-card">
+                        <FaClock className="card-icon" />
+                        <div className="card-content">
+                            <h3>Pending Payments</h3>
+                            <p className="amount">₹{(requests.filter(req => req.status === 'PENDING')
+                                .reduce((sum, req) => sum + (req.price || 0), 0)).toLocaleString()}</p>
+                        </div>
                     </div>
                 </div>
-                <div className="earnings-card">
-                    <FaCheckCircle className="card-icon" />
-                    <div className="card-content">
-                        <h3>Completed Payments</h3>
-                        <p className="amount">₹{completedTotal.toFixed(2)}</p>
-                    </div>
-                </div>
-                <div className="earnings-card">
-                    <FaClock className="card-icon" />
-                    <div className="card-content">
-                        <h3>Pending Payments</h3>
-                        <p className="amount">₹{pendingTotal.toFixed(2)}</p>
-                    </div>
-                </div>
-            </div>
             )}
 
             <div className="requests-list">
-                {requests.length === 0 ? (
+                {error ? (
+                    <div className="error-message">
+                        <FaInfoCircle className="error-icon" />
+                        <p>{error}</p>
+                    </div>
+                ) : requests.length === 0 && !error ? (
                     <div className="no-listings-message">
                         <FaPaw className="empty-icon" />
                         <h2>No Booking Requests Yet</h2>
@@ -138,62 +155,68 @@ const BookingRequests = () => {
                             They will appear here once customers make bookings.</p>
                     </div>
                 ) : (
-                    filteredRequests.map((request) => (
-
-                        <div
-                            key={request.id}
-                            className={`request-card ${request.status.toLowerCase()}`}
-                            // onClick={() => handleView(request.id)}
-                        >
-                            <div className="request-info">
-                                <div className="request-header">
-                                    <h2 data-tooltip={request.service}>{request.service}</h2>
-                                    <span className={`status-badge ${request.status.toLowerCase()}`}>
-                                        {request.displayStatus}
-                                    </span>
-                                </div>
-
-                                <div className="left-column">
-                                    <div className="info-row">
-                                        <FaUser />
-                                        <span data-tooltip={request.userName}>{request.userName}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <FaPaw />
-                                        <span data-tooltip={`${request.pets} ${request.petType}(s)`}>
-                                            {request.pets} {request.petType}(s)
+                    filteredRequests.length > 0 ? (
+                        filteredRequests.map((request) => (
+                            <div
+                                key={request.id}
+                                className={`request-card ${request.status.toLowerCase()}`}
+                            >
+                                <div className="request-info">
+                                    <div className="request-header">
+                                        <h2 data-tooltip={request.service}>{request.service}</h2>
+                                        <span className={`status-badge ${request.status.toLowerCase()}`}>
+                                            {request.displayStatus}
                                         </span>
                                     </div>
 
-                                    {request.additionalInfo && (
+                                    <div className="left-column">
                                         <div className="info-row">
-                                            <FaInfoCircle />
-                                            <span data-tooltip={request.additionalInfo}>{request.additionalInfo}</span>
+                                            <FaUser />
+                                            <span data-tooltip={request.userName}>{request.userName}</span>
                                         </div>
-                                    )}
-                                    <div className="pet-details">
-                                        <p><strong>Breed:</strong> {request.breed}</p>
-                                        <p><strong>Size:</strong> {request.size}</p>
-                                    </div>
-                                </div>
-
-                                <div className="right-column">
-                                    <div className="info-row">
-                                        <FaCalendarAlt />
-                                        <span>Starting from {request.startDate}</span>
-                                    </div>
-                                    {request.additionalInfo && (
                                         <div className="info-row">
-                                            <FaInfoCircle />
-                                            <span>{request.additionalInfo}</span>
+                                            <FaPaw />
+                                            <span data-tooltip={`${request.pets} ${request.petType}(s)`}>
+                                                {request.pets} {request.petType}(s)
+                                            </span>
                                         </div>
-                                    )}
-                                </div>
+                                        {request.additionalInfo && (
+                                            <div className="info-row">
+                                                <FaInfoCircle />
+                                                <span data-tooltip={request.additionalInfo}>{request.additionalInfo}</span>
+                                            </div>
+                                        )}
+                                        <div className="pet-details">
+                                            <p><strong>Breed:</strong> {request.breed}</p>
+                                            <p><strong>Size:</strong> {request.size}</p>
+                                        </div>
+                                    </div>
 
-                                <p className="price">₹{request.price}</p>
+                                    <div className="right-column">
+                                        <div className="info-row">
+                                            <FaCalendarAlt />
+                                            <span>Starting from {request.startDate}</span>
+                                        </div>
+                                        {request.additionalInfo && (
+                                            <div className="info-row">
+                                                <FaInfoCircle />
+                                                <span>{request.additionalInfo}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p className="price">₹{request.price}</p>
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="no-requests-message">
+                            <p>No {activeTab === 'DONE' ? 'completed' : 'pending'} booking requests at the moment.</p>
+                            {activeTab === 'PENDING' && (
+                                <p>New booking requests will appear here!</p>
+                            )}
                         </div>
-                    ))
+                    )
                 )}
             </div>
         </div>
