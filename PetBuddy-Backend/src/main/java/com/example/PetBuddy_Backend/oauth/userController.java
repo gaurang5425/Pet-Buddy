@@ -1,18 +1,13 @@
 package com.example.PetBuddy_Backend.oauth;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -42,7 +37,14 @@ public class userController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+
+    // Get all users
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
     // Update user role by email
     @PutMapping("/update-role/{email}/{role}")
     public ResponseEntity<User> updateUserRole(@PathVariable String email, @PathVariable String role) {
@@ -56,7 +58,18 @@ public class userController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     // Update user profile image
     @PutMapping("/update-profile-image/{email}")
     public ResponseEntity<User> updateProfileImage(@PathVariable String email, @RequestBody ProfileImageRequest request) {

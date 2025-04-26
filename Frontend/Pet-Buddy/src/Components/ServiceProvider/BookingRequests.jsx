@@ -19,6 +19,13 @@ const BookingRequests = () => {
     };
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         const fetchRequests = async () => {
             try {
                 if (!userData?.name) {

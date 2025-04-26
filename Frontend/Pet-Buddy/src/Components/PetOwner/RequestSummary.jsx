@@ -11,6 +11,13 @@ const RequestSummary = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         const fetchRequestData = async () => {
             try {
                 const requestId = location.state?.requestId;
@@ -161,10 +168,28 @@ const RequestSummary = () => {
                 </div>
 
                 <div className="action-buttons">
-                    <button onClick={handlePayment} className="view-bookings-button">
-                        Proceed to Payment
-                    </button>
+                    {requestData.status?.toUpperCase() === 'PENDING'
+                        && (
+                            <>
+                                <button onClick={handlePayment} className="view-bookings-button">
+                                    Proceed to Payment
+                                </button>
+                                <button
+                                    onClick={() => navigate('/ContactForm', { state: { ...requestData } })}
+                                    className="edit-button"
+                                >
+                                    Edit Request
+                                </button>
+                            </>
+                    )}
+
+                    {requestData.status?.toUpperCase() === 'DONE' && (
+                        <button onClick={() => navigate(-1)} className="view-bookings-button">
+                            Back
+                        </button>
+                    )}
                 </div>
+
             </div>
         </div>
     );

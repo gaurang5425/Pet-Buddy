@@ -34,6 +34,9 @@ public class PetService {
     private Integer reviews;
     private Integer completedBookings;
     private Double price;
+    private Boolean req_accepted;
+
+
 
     @Lob
     @Column(name = "image", columnDefinition = "LONGBLOB")
@@ -68,7 +71,7 @@ public class PetService {
     // Constructor with fields
     public PetService(Long id, String name, String ownerName, String location, String distance,
                       String description, Integer rating, Integer reviews, Integer completedBookings,
-                      Double price, byte[] image, List<byte[]> moreImages, List<String> badges,
+                      Double price,Boolean req_accepted, byte[] image, List<byte[]> moreImages, List<String> badges,
                       String serviceType, List<String> petTypes) {
         this.id = id;
         this.name = name;
@@ -80,6 +83,7 @@ public class PetService {
         this.reviews = reviews;
         this.completedBookings = completedBookings;
         this.price = price;
+        this.req_accepted=req_accepted;
         this.image = image;
         this.moreImages = moreImages;
         this.badges = badges;
@@ -92,7 +96,13 @@ public class PetService {
     public List<byte[]> getMoreImages() {
         return moreImages;
     }
+    public Boolean getReq_accepted() {
+        return req_accepted;
+    }
 
+    public void setReq_accepted(Boolean req_accepted) {
+        this.req_accepted = req_accepted;
+    }
     public void setMoreImages(List<byte[]> moreImages) {
         this.moreImages = moreImages;
     }
@@ -238,5 +248,5 @@ public class PetService {
 
     public void setPetTypes(List<String> petTypes) {
         this.petTypes = petTypes;
-}
+    }
 }

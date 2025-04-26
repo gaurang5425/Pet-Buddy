@@ -30,6 +30,8 @@ import PrivacyPolicy from "./Components/Footer/PrivacyPolicy.jsx";
 import AboutUs from "./Components/Footer/AboutUs.jsx";
 import AdminPanel from './Components/Admin/AdminPanel.jsx';
 import AdminNavbar from "./Components/Admin/AdminNavbar.jsx";
+import PetSitterServiceData from "./Components/Admin/PetSitterServiceData.jsx";
+import PetSitterServiceUpdate from "./Components/ServiceProvider/PetSitterServiceUpdate.jsx";
 
 const Layout = () => {
     const location = useLocation();
@@ -37,7 +39,7 @@ const Layout = () => {
     const isSignupPage = location.pathname === "/Signup";
     const isProfilePage = location.pathname === "/UserProfile" || location.pathname === "/my-requests";
     const isNewTab = window.opener !== null;
-    const isAdminPage = location.pathname.startsWith("/admin");
+    const isAdminPage = location.pathname.startsWith("/admin") || location.pathname.startsWith("/pet-sitter-data/");
 
     return (
         <div className="App">
@@ -66,11 +68,14 @@ const Layout = () => {
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/payment-failure" element={<PaymentFailure />} />
                 <Route path="/create-listing" element={<CreateListing />} />
+                <Route path="/create-listing/:id" element={<CreateListing />} />
                 <Route path={"/TermsAndConditions"} element={<TermsAndConditions />} />
                 <Route path={"/UserContactForm"} element={<UserContactForm />} />
                 <Route path={"/PrivacyPolicy"} element={<PrivacyPolicy />} />
                 <Route path={"/AboutUs"} element={<AboutUs />} />
                 <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/pet-sitter-data/:id" element={<PetSitterServiceData />} />
+                <Route path="/pet-sitter-update/:id" element={<PetSitterServiceUpdate />} />
             </Routes>
             {(isLoginPage || isSignupPage) && isNewTab ?  <Signup_Login_Footer/> : null}
         </div>

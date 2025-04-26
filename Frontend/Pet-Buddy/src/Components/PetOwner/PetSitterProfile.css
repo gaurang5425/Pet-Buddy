@@ -1,3 +1,21 @@
+.pet-types-grid {
+    display: flex;
+    flex-wrap: nowrap; /* keeps all items in a single line */
+    overflow-x: auto; /* allows horizontal scroll if tags overflow */
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.pet-type-tag {
+    color: black;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0; /* prevents shrinking */
+}
+
 .profile-container {
     max-width: 1223px;
     width: 1223px;
@@ -156,7 +174,8 @@
 }
 
 .service-item {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    width: 325px;
 }
 
 .service-header {

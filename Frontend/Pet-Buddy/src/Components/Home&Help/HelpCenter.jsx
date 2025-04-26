@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useUser } from '../../context/UserContext.jsx';
 import { FaUser, FaPaw, FaMoneyBillWave, FaShieldAlt, FaCog, FaHandshake, FaCalendarAlt, FaQuestionCircle } from 'react-icons/fa';
 import "./HelpCenter.css";
@@ -105,6 +105,12 @@ const HelpCenter = () => {
         setSelectedCategory(category.title);
         setOpenIndex(null); // Reset open FAQ when changing category
     };
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
 
     return (
         <div className="help-center-container">

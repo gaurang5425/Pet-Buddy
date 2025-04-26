@@ -43,6 +43,13 @@ const PetSitters = () => {
     };
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         fetchPetSitters();
     }, []);
 
@@ -58,8 +65,11 @@ const PetSitters = () => {
                 throw new Error('No data received from API');
             }
 
-            setOriginalPetSitters(response.data);
-            setPetSitterCards(response.data);
+            // Filter services where req_accepted is true
+            const acceptedServices = response.data.filter(service => service.req_accepted === true);
+
+            setOriginalPetSitters(acceptedServices);
+            setPetSitterCards(acceptedServices);
             setLoading(false);
         } catch (err) {
             console.error('Error fetching pet sitters:', err);
@@ -272,6 +282,7 @@ const PetSitters = () => {
                                                         style={{ color: index < card.rating ? '#ffd700' : '#e0e0e0' }}
                                                     />
                                                 ))}
+
                                                 <span>{card.reviews} Reviews</span>
                                             </div>
                                             <div className="pet-sitters-bookings">

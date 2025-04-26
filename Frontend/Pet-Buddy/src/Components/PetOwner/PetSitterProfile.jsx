@@ -25,6 +25,13 @@ const PetSitterProfile = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/pet-services/${id}`);
@@ -165,8 +172,8 @@ const PetSitterProfile = () => {
                             <div className="service-title">
                                 <h3>{profile.serviceType}</h3>
                                 <div className="price-reservation">
-                                    <span>From ₹{profile.price} /visit</span>
-                                    <span className="reservation-text">MAKE RESERVATION</span>
+                                    <span>From ₹ {profile.price} /visit : </span>
+                                    <span className="reservation-text"> - MAKE RESERVATION</span>
                                 </div>
                             </div>
                         </div>

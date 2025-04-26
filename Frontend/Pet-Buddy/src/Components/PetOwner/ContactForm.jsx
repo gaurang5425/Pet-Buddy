@@ -6,147 +6,147 @@ import { FaCalendar, FaCheck, FaExclamationCircle } from 'react-icons/fa';
 import { useUser } from '../../context/UserContext.jsx';
 
 const ContactForm = () => {
-    const location = useLocation();
+    const { state } = useLocation();
     const navigate = useNavigate();
     const { userData } = useUser();
+    const [validRequest, setValidRequest] = useState(true);
+
+    const isUpdate = !!state?.id && validRequest;
+
     const [formData, setFormData] = useState({
-        userName: userData?.name || '',
-        owner: location.state?.owner || '',
-        serviceSelected: location.state?.serviceSelected || '',
+        id: state?.id || '',
+        userName: '',
+        owner: state?.owner || '',
+        serviceSelected: state?.serviceSelected || '',
         numberOfPets: 1,
         petType: '',
         breed: '',
         size: '',
         additionalInfo: '',
         startDate: '',
-        price: location.state?.price || 0,
-        status: 'PENDING'
+        price: state?.price || 0,
+        status: state?.status || 'PENDING',
     });
 
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
     const [validation, setValidation] = useState({});
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
+    // Load userName from context
     useEffect(() => {
         if (userData?.name) {
-            setFormData(prev => ({
-                ...prev,
-                userName: userData.name
-            }));
+            setFormData(prev => ({ ...prev, userName: userData.name }));
         }
     }, [userData]);
 
-    // Calculate form completion progress
+    // Load existing request data for update
     useEffect(() => {
-        const requiredFields = [
-            'userName',
-            'petType',
-            'breed',
-            'size',
-            'startDate'
-        ];
-        
-        const completedFields = requiredFields.filter(field => {
-            const value = formData[field];
-            return value !== '' && value !== null && value !== undefined;
+        const fetchRequest = async () => {
+            if (state?.id) {
+                try {
+                    const res = await axios.get(`http://localhost:8080/api/services/requests/${state.id}`);
+                    if (res.status === 200) {
+                        setFormData(prev => ({
+                            ...res.data,
+                            userName: userData?.name || res.data.userName
+                        }));
+                        setValidRequest(true);  // Mark as valid if data is fetched
+                    }
+                } catch (err) {
+                    console.error('Failed to load request data:', err);
+                    setValidRequest(false);  // Mark as invalid if fetch fails
+                }
+            }
+        };
+        fetchRequest();
+    }, [state?.id, userData]);
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
-        
-        const progressPercentage = Math.round((completedFields.length / requiredFields.length) * 100);
-        setProgress(progressPercentage);
+    }, []);
+
+    // Update progress bar
+    useEffect(() => {
+        const required = ['userName', 'petType', 'breed', 'size', 'startDate'];
+        const filled = required.filter(field => !!formData[field]);
+        setProgress(Math.round((filled.length / required.length) * 100));
     }, [formData]);
 
     const validateField = (name, value) => {
         switch (name) {
             case 'userName':
-                return value.length >= 2 ? 'valid' : 'Name must be at least 2 characters long';
+                return value.length >= 2 ? 'valid' : 'Name must be at least 2 characters';
             case 'numberOfPets':
-                return value > 0 && value <= 10 ? 'valid' : 'Number of pets must be between 1 and 10';
+                return value > 0 && value <= 10 ? 'valid' : 'Number of pets must be 1–10';
             case 'petType':
-                return value !== '' ? 'valid' : 'Please select a pet type';
+                return value ? 'valid' : 'Select a pet type';
             case 'breed':
-                return value.length >= 2 ? 'valid' : 'Please enter a valid breed';
+                return value.length >= 2 ? 'valid' : 'Enter a valid breed';
             case 'size':
-                return value !== '' ? 'valid' : 'Please select a pet size';
+                return value ? 'valid' : 'Select a pet size';
             case 'startDate':
-                const selectedDate = new Date(value);
-                const currentDate = new Date();
-                // Remove any milliseconds for accurate comparison
-                currentDate.setMilliseconds(0);
-                selectedDate.setMilliseconds(0);
-                return selectedDate > currentDate ?
-                    'valid' :
-                    'Please select a future date and time';
+                return new Date(value) > new Date() ? 'valid' : 'Choose a future date';
             default:
                 return 'valid';
         }
     };
 
-    const handleChange = (e) => {
+    const handleChange = e => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-
-        // Real-time validation
-        const validationResult = validateField(name, value);
-        setValidation(prev => ({
-            ...prev,
-            [name]: validationResult
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setValidation(prev => ({ ...prev, [name]: validateField(name, value) }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
+        const required = ['userName', 'numberOfPets', 'petType', 'breed', 'size', 'startDate'];
+        const newValidation = {};
+        let hasError = false;
+
+        required.forEach(field => {
+            const result = validateField(field, formData[field]);
+            newValidation[field] = result;
+            if (result !== 'valid') hasError = true;
+        });
+
+        setValidation(newValidation);
+
+        if (hasError) {
+            setError('Fix the errors before submitting.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Validate all required fields
-            const newValidation = {};
-            let hasErrors = false;
-
-            Object.keys(formData).forEach(key => {
-                if (key !== 'owner' && key !== 'serviceSelected' && key !== 'price' && 
-                    key !== 'status' && key !== 'additionalInfo') {
-                    const value = formData[key];
-                    const validationResult = validateField(key, value);
-                    newValidation[key] = validationResult;
-                    if (validationResult !== 'valid') {
-                        hasErrors = true;
-                    }
-                }
-            });
-
-            setValidation(newValidation);
-
-            if (hasErrors) {
-                setError('Please fix the validation errors before submitting');
-                setLoading(false);
-                return;
-            }
-
-            // Format the data according to the backend model
             const requestData = {
                 ...formData,
-                id: Date.now(),
-                numberOfPets: parseInt(formData.numberOfPets),
-                price: parseFloat(formData.price)
+                numberOfPets: Number(formData.numberOfPets),
+                price: Number(formData.price),
             };
 
-            const response = await axios.post('http://localhost:8080/api/services/requests', requestData);
+            const endpoint = isUpdate
+                ? `http://localhost:8080/api/services/requests/${formData.id}`
+                : 'http://localhost:8080/api/services/requests';
 
-            if (response.status === 201) {
-                navigate('/RequestSummary', { 
-                    state: { 
-                        requestId: response.data.id
-                    }
+            const method = isUpdate ? axios.put : axios.post;
+            if (!isUpdate) requestData.id = Date.now();
+
+            const res = await method(endpoint, requestData);
+
+            if (res.status === 200 || res.status === 201) {
+                navigate('/RequestSummary', {
+                    state: { requestId: requestData.id }
                 });
             }
         } catch (err) {
-            console.error('Error submitting request:', err);
-            setError(err.response?.data?.message || 'Error submitting request. Please try again.');
+            setError(err.response?.data?.message || 'Error submitting request.');
         } finally {
             setLoading(false);
         }
@@ -155,8 +155,8 @@ const ContactForm = () => {
     return (
         <div className="contact-form-container-outer">
             <div className="contact-form-container">
-                <h2>Book Pet Service</h2>
-                
+                <h2>{isUpdate ? 'Update Pet Service Request' : 'Book Pet Service'}</h2>
+
                 {/* Progress Bar */}
                 <div className="progress-container">
                     <div className="progress-bar">
@@ -166,8 +166,9 @@ const ContactForm = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="contact-form">
-                    <div className="form-section">
-                        <h3 className="form-section-title">Personal Information</h3>
+                    {/* Personal Info */}
+                    <section className="form-section">
+                        <h3>Personal Information</h3>
                         <div className="form-group">
                             <label>Your Name</label>
                             <div className="input-container">
@@ -182,149 +183,76 @@ const ContactForm = () => {
                                 <FaCheck className="validation-icon valid" />
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div className="form-section">
-                        <h3 className="form-section-title">Service Details</h3>
-                        <div className="form-group">
-                            <label>Service Provider</label>
-                            <input
-                                type="text"
-                                value={formData.owner}
-                                disabled
-                                className="disabled-input"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Service Selected</label>
-                            <input
-                                type="text"
-                                value={formData.serviceSelected}
-                                disabled
-                                className="disabled-input"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Price</label>
-                            <input
-                                type="number"
-                                value={formData.price}
-                                disabled
-                                className="disabled-input"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-section">
-                        <h3 className="form-section-title">Pet Information</h3>
-                        <div className="form-group">
-                            <label>Number of Pets *</label>
-                            <div className="input-container">
+                    {/* Service Info */}
+                    <section className="form-section">
+                        <h3>Service Details</h3>
+                        {['owner', 'serviceSelected', 'price'].map(field => (
+                            <div key={field} className="form-group">
+                                <label>{field === 'owner' ? 'Service Provider' : field === 'price' ? 'Price' : 'Service Selected'}</label>
                                 <input
-                                    type="number"
-                                    name="numberOfPets"
-                                    value={formData.numberOfPets}
-                                    onChange={handleChange}
-                                    required
-                                    min="1"
-                                    max="10"
-                                    className={validation.numberOfPets === 'valid' ? 'valid' : validation.numberOfPets ? 'invalid' : ''}
+                                    type={field === 'price' ? 'number' : 'text'}
+                                    value={formData[field]}
+                                    disabled
+                                    className="disabled-input"
                                 />
-                                {validation.numberOfPets === 'valid' && <FaCheck className="validation-icon valid" />}
-                                {validation.numberOfPets && validation.numberOfPets !== 'valid' && (
-                                    <FaExclamationCircle className="validation-icon invalid" />
-                                )}
                             </div>
-                            {validation.numberOfPets && validation.numberOfPets !== 'valid' && (
-                                <span className="validation-message">{validation.numberOfPets}</span>
-                            )}
-                        </div>
+                        ))}
+                    </section>
 
-                        <div className="form-group">
-                            <label>Pet Type *</label>
-                            <div className="input-container">
-                                <select
-                                    name="petType"
-                                    value={formData.petType}
-                                    onChange={handleChange}
-                                    required
-                                    className={validation.petType === 'valid' ? 'valid' : validation.petType ? 'invalid' : ''}
-                                >
-                                    <option value="">Select pet type</option>
-                                    <option value="Dog">Dog</option>
-                                    <option value="Cat">Cat</option>
-                                    <option value="Bird">Bird</option>
-                                    <option value="Fish">Fish</option>
-                                    <option value="Rabbit">Rabbit</option>
-                                    <option value="Hamster">Hamster</option>
-                                    <option value="Guinea Pig">Guinea Pig</option>
-                                    <option value="Reptile">Reptile</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                {validation.petType === 'valid' && <FaCheck className="validation-icon valid" />}
-                                {validation.petType && validation.petType !== 'valid' && (
-                                    <FaExclamationCircle className="validation-icon invalid" />
-                                )}
-                            </div>
-                            {validation.petType && validation.petType !== 'valid' && (
-                                <span className="validation-message">{validation.petType}</span>
-                            )}
-                        </div>
+                    {/* Pet Info */}
+                    <section className="form-section">
+                        <h3>Pet Information</h3>
 
-                        <div className="form-group">
-                            <label>Pet Breed *</label>
-                            <div className="input-container">
-                                <input
-                                    type="text"
-                                    name="breed"
-                                    value={formData.breed}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter pet breed"
-                                    className={validation.breed === 'valid' ? 'valid' : validation.breed ? 'invalid' : ''}
-                                />
-                                {validation.breed === 'valid' && <FaCheck className="validation-icon valid" />}
-                                {validation.breed && validation.breed !== 'valid' && (
-                                    <FaExclamationCircle className="validation-icon invalid" />
-                                )}
-                            </div>
-                            {validation.breed && validation.breed !== 'valid' && (
-                                <span className="validation-message">{validation.breed}</span>
-                            )}
-                        </div>
+                        {/* Number of Pets */}
+                        <FormInput
+                            label="Number of Pets *"
+                            type="number"
+                            name="numberOfPets"
+                            min="1"
+                            max="10"
+                            value={formData.numberOfPets}
+                            onChange={handleChange}
+                            validation={validation.numberOfPets}
+                        />
 
-                        <div className="form-group">
-                            <label>Pet Size *</label>
-                            <div className="input-container">
-                                <select
-                                    name="size"
-                                    value={formData.size}
-                                    onChange={handleChange}
-                                    required
-                                    className={validation.size === 'valid' ? 'valid' : validation.size ? 'invalid' : ''}
-                                >
-                                    <option value="">Select pet size</option>
-                                    <option value="0-5kg">0-5kg</option>
-                                    <option value="5-10kg">5-10kg</option>
-                                    <option value="10-20kg">10-20kg</option>
-                                    <option value="20-30kg">20-30kg</option>
-                                    <option value="30kg+">30kg+</option>
-                                </select>
-                                {validation.size === 'valid' && <FaCheck className="validation-icon valid" />}
-                                {validation.size && validation.size !== 'valid' && (
-                                    <FaExclamationCircle className="validation-icon invalid" />
-                                )}
-                            </div>
-                            {validation.size && validation.size !== 'valid' && (
-                                <span className="validation-message">{validation.size}</span>
-                            )}
-                        </div>
-                    </div>
+                        {/* Pet Type */}
+                        <FormSelect
+                            label="Pet Type *"
+                            name="petType"
+                            options={['Dog', 'Cat', 'Bird', 'Fish', 'Rabbit', 'Hamster', 'Guinea Pig', 'Reptile', 'Other']}
+                            value={formData.petType}
+                            onChange={handleChange}
+                            validation={validation.petType}
+                        />
 
-                    <div className="form-section">
-                        <h3 className="form-section-title">Booking Details</h3>
+                        {/* Breed */}
+                        <FormInput
+                            label="Pet Breed *"
+                            name="breed"
+                            value={formData.breed}
+                            onChange={handleChange}
+                            placeholder="Enter pet breed"
+                            validation={validation.breed}
+                        />
+
+                        {/* Size */}
+                        <FormSelect
+                            label="Pet Size *"
+                            name="size"
+                            options={['0-5kg', '5-10kg', '10-20kg', '20-30kg', '30kg+']}
+                            value={formData.size}
+                            onChange={handleChange}
+                            validation={validation.size}
+                        />
+                    </section>
+
+                    {/* Booking Info */}
+                    <section className="form-section">
+                        <h3>Booking Details</h3>
+
+                        {/* Start Date */}
                         <div className="form-group">
                             <label>Start Date *</label>
                             <div className="input-container date-input-container">
@@ -336,7 +264,6 @@ const ContactForm = () => {
                                     required
                                     min={new Date().toISOString().slice(0, 16)}
                                     className={`date-input ${validation.startDate === 'valid' ? 'valid' : validation.startDate ? 'invalid' : ''}`}
-                                    onFocus={(e) => e.target.showPicker()}
                                 />
                                 <FaCalendar className="calendar-icon" />
                                 {validation.startDate === 'valid' && <FaCheck className="validation-icon valid" />}
@@ -349,6 +276,7 @@ const ContactForm = () => {
                             )}
                         </div>
 
+                        {/* Additional Info */}
                         <div className="form-group">
                             <label>Additional Information</label>
                             <textarea
@@ -357,20 +285,18 @@ const ContactForm = () => {
                                 onChange={handleChange}
                                 rows="4"
                                 placeholder="Any special requirements or notes about your pet"
-                                style={{ backgroundColor: "white" , color: "black" }} // Ensures white background
                             />
-
                         </div>
-                    </div>
+                    </section>
 
                     {error && <div className="error-message">{error}</div>}
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className={`submit-button ${loading ? 'submitting' : ''}`}
                         disabled={loading}
                     >
-                        {loading ? 'Submitting...' : 'Submit Request'}
+                        {loading ? 'Submitting...' : isUpdate ? 'Update Request' : 'Submit Request'}
                     </button>
                 </form>
             </div>
@@ -378,4 +304,51 @@ const ContactForm = () => {
     );
 };
 
-export default ContactForm; 
+// Reusable Input Component
+const FormInput = ({ label, name, type = 'text', value, onChange, validation, ...props }) => (
+    <div className="form-group">
+        <label>{label}</label>
+        <div className="input-container">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                className={validation === 'valid' ? 'valid' : validation ? 'invalid' : ''}
+                {...props}
+            />
+            {validation === 'valid' && <FaCheck className="validation-icon valid" />}
+            {validation && validation !== 'valid' && <FaExclamationCircle className="validation-icon invalid" />}
+        </div>
+        {validation && validation !== 'valid' && (
+            <span className="validation-message">{validation}</span>
+        )}
+    </div>
+);
+
+// Reusable Select Component
+const FormSelect = ({ label, name, options, value, onChange, validation }) => (
+    <div className="form-group">
+        <label>{label}</label>
+        <div className="input-container">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                className={validation === 'valid' ? 'valid' : validation ? 'invalid' : ''}
+            >
+                <option value="">Select {label.toLowerCase()}</option>
+                {options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </select>
+            {validation === 'valid' && <FaCheck className="validation-icon valid" />}
+            {validation && validation !== 'valid' && <FaExclamationCircle className="validation-icon invalid" />}
+        </div>
+        {validation && validation !== 'valid' && (
+            <span className="validation-message">{validation}</span>
+        )}
+    </div>
+);
+
+export default ContactForm;

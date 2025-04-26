@@ -10,6 +10,13 @@ const Home = () => {
     const { userData } = useUser();
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         if (userData) {
             if (userData.role === 'OWNER') {
                 navigate('/my-listings');

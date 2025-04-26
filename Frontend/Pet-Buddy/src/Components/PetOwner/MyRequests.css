@@ -1,3 +1,4 @@
+/* Container */
 .my-req-container {
     min-height: calc(100vh - 80px);
     padding: 40px 20px;
@@ -8,6 +9,7 @@
     box-sizing: border-box;
 }
 
+/* Header */
 .my-req-header {
     display: flex;
     justify-content: space-between;
@@ -24,6 +26,40 @@
     color: #333;
 }
 
+/* Header Actions */
+.my-req-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Filter Button */
+.my-req-filter-container {
+    position: relative;
+}
+
+.my-req-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.my-req-filter-btn:hover {
+    background: #f8f8f8;
+    border-color: #d0d0d0;
+}
+
+/* Removed dropdown menu styles since inline icons are used instead */
+
+/* Make Request Button */
 .my-req-make-request-btn {
     background: white;
     color: #333;
@@ -39,6 +75,11 @@
 .my-req-make-request-btn:hover {
     background: #f8f8f8;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* List Card */
+.my-req-list {
+    padding: 0 20px;
 }
 
 .my-req-card {
@@ -60,11 +101,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.my-req-card.my-req-dropdown-active {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
 .my-req-info h2 {
     font-size: 20px;
     margin: 0 0 10px 0;
@@ -77,16 +113,22 @@
     font-size: 14px;
 }
 
-.my-req-arrow {
-    color: #8865c1;
+/* User Info */
+.my-req-user-info {
     display: flex;
     align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
 }
 
-.my-req-arrow-icon {
-    font-size: 20px;
+.my-req-user-info svg {
+    font-size: 16px;
+    color: #8865c1;
 }
 
+/* Status Badge */
 .my-req-status {
     display: inline-block;
     padding: 4px 12px;
@@ -106,6 +148,31 @@
     color: #28a745;
 }
 
+/* Status Badge (alternative styles) */
+.my-req-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.my-req-status-badge.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.my-req-status-badge.closed {
+    background: #ffebee;
+    color: #dc3545;
+}
+
+.my-req-status-badge.done {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+/* Action Buttons (Direct Inline Icons) */
 .my-req-actions {
     display: flex;
     gap: 10px;
@@ -133,6 +200,15 @@
     background: #7451b0;
 }
 
+.my-req-action-btn.edit {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.my-req-action-btn.edit:hover {
+    background: #bbdefb;
+}
+
 .my-req-action-btn.delete {
     background: #ffebee;
     color: #dc3545;
@@ -143,68 +219,7 @@
     color: white;
 }
 
-.my-req-list {
-    padding: 0 20px;
-}
-
-.my-req-card.closed {
-    background: #fff;
-    opacity: 0.8;
-}
-
-.my-req-three-dots-btn {
-    background: none;
-    border: none;
-    color: #666;
-    padding: 8px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.my-req-three-dots-btn:hover {
-    color: #333;
-}
-
-.my-req-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    width: 150px;
-    z-index: 1000;
-    overflow: hidden;
-    margin-top: 5px;
-}
-
-.my-req-dropdown-menu button {
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #333;
-    font-size: 14px;
-    transition: background-color 0.2s;
-}
-
-.my-req-dropdown-menu button:hover {
-    background-color: #f5f5f5;
-}
-
-.my-req-cancel-btn {
-    color: #dc3545;
-}
-
-.my-req-cancel-btn:hover {
-    background-color: #ffebee;
-}
-
+/* Card Header */
 .my-req-card-header {
     display: flex;
     align-items: center;
@@ -212,58 +227,7 @@
     margin-bottom: 10px;
 }
 
-.my-req-status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.my-req-status-badge.active {
-    background: #e8f5e9;
-    color: #2e7d32;
-}
-
-.my-req-status-badge.closed {
-    background: #ffebee;
-    color: #dc3545;
-}
-
-.my-req-status-badge.done {
-    background: #e3f2fd;
-    color: #1976d2;
-}
-
-.my-req-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.my-req-filter-container {
-    position: relative;
-}
-
-.my-req-filter-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background: white;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.my-req-filter-btn:hover {
-    background: #f8f8f8;
-    border-color: #d0d0d0;
-}
-
+/* Filter Dropdown (if needed) */
 .my-req-filter-dropdown {
     position: absolute;
     top: 100%;
@@ -299,61 +263,142 @@
     font-weight: 500;
 }
 
-.my-req-user-info {
+/* Filter Button */
+.my-req-filter-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #666;
+    padding: 12px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #333;
     font-size: 14px;
-    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.my-req-user-info svg {
-    font-size: 16px;
-    color: #8865c1;
+.my-req-filter-btn:hover {
+    background: #f8f8f8;
+    border-color: #d0d0d0;
 }
 
+.my-req-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.my-req-modal-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.my-req-modal-box h3 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.my-req-modal-box p {
+    margin-bottom: 1.5rem;
+    color: #555;
+}
+
+.my-req-modal-actions {
+    display: flex;
+    justify-content: space-around;
+}
+
+.confirm-btn {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background-color: #c9302c;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .my-req-container {
         padding: 20px 10px;
     }
 
     .my-req-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
         padding: 0 10px;
     }
 
-    .my-req-card {
-        padding: 15px;
-    }
-
-    .my-req-info h2 {
-        font-size: 18px;
-    }
-
-    .my-req-make-request-btn {
-        padding: 10px 20px;
-    }
-
-    .my-req-list {
-        padding: 0 10px;
+    .my-req-header h1 {
+        margin-left: 0;
     }
 
     .my-req-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+        padding: 15px;
     }
 
     .my-req-actions {
         width: 100%;
         justify-content: flex-end;
+        flex-wrap: wrap;
     }
 
     .my-req-header-actions {
         gap: 8px;
     }
 
+    .my-req-make-request-btn,
     .my-req-filter-btn {
-        padding: 8px 12px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .my-req-list {
+        padding: 0 10px;
+    }
+
+    .my-req-info h2 {
+        font-size: 18px;
     }
 }

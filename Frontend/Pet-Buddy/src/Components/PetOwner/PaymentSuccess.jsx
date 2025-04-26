@@ -12,6 +12,13 @@ const PaymentSuccess = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    useEffect(() => {
         const fetchRequestData = async () => {
             try {
                 // Try to get requestId from location state first

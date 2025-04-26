@@ -18,7 +18,11 @@ const MyRequests = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
+    const [confirmCancelId, setConfirmCancelId] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+
+
     // Map API status values to display values
     const statusMap = {
         'PENDING': 'Active',
@@ -33,6 +37,13 @@ const MyRequests = () => {
         const uniqueStatuses = new Set(requests.map(request => statusMap[request.status] || request.status));
         return ['All', ...Array.from(uniqueStatuses)];
     };
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -62,7 +73,7 @@ const MyRequests = () => {
         };
 
         fetchRequests();
-        
+
     }, [currentUser?.displayName, statusMap, userData?.name]);
 
     // Close dropdown when clicking outside
@@ -90,24 +101,11 @@ const MyRequests = () => {
 
     const handleView = (requestId, e) => {
         if (e) e.stopPropagation();
-        navigate(`/request/${requestId}`);
-    };
-
-    const handleEdit = (requestId, e) => {
-        e.stopPropagation();
-        navigate(`/edit-request/${requestId}`);
-        setActiveDropdown(null);
-    };
-
-    const handleCancel = (requestId, e) => {
-        e.stopPropagation();
-        console.log('Canceling request:', requestId);
-        setActiveDropdown(null);
-    };
-
-    const toggleDropdown = (requestId, e) => {
-        e.stopPropagation();
-        setActiveDropdown(activeDropdown === requestId ? null : requestId);
+        navigate('/RequestSummary', {
+            state: {
+                requestId: requestId
+            }
+        });
     };
 
     // Get filter options based on available statuses
@@ -125,6 +123,32 @@ const MyRequests = () => {
     if (error) {
         return <div className="error-message">{error}</div>;
     }
+
+    const handleCancel = (requestId, e) => {
+        e.stopPropagation();
+        setConfirmCancelId(requestId); // show the confirmation modal
+        setActiveDropdown(null);
+    };
+
+    const confirmDelete = async () => {
+        if (!confirmCancelId) return;
+        setDeleting(true);
+        try {
+            await axios.delete(`http://localhost:8080/api/services/requests/${confirmCancelId}`);
+            setRequests(prev => prev.filter(req => req.id !== confirmCancelId)); // remove from UI
+            setConfirmCancelId(null);
+        } catch (err) {
+            console.error('Error cancelling request:', err);
+            alert("Failed to cancel request. Try again later.");
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setConfirmCancelId(null);
+    };
+
 
     return (
         <div className="my-req-container">
@@ -184,32 +208,45 @@ const MyRequests = () => {
                             <p>{request.pets} Pet(s), from {request.startDate}, {request.courses} course</p>
                         </div>
                         <div className="my-req-actions" ref={dropdownRef}>
+                            {/* Direct inline icons for each action */}
                             <button
-                                className="my-req-three-dots-btn"
-                                onClick={(e) => toggleDropdown(request.id, e)}
+                                className="my-req-action-btn view"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleView(request.id, e);
+                                }}
                             >
-                                <FaEllipsisV />
+                                <FaEye />
                             </button>
-                            {activeDropdown === request.id && (
-                                <div className="my-req-dropdown-menu">
-                                    <button onClick={(e) => handleView(request.id, e)}
-                                            className="my-req-action-btn">
-                                        <FaEye /> View
-                                    </button>
-                                    <button onClick={(e) => handleEdit(request.id, e)}
-                                            className="my-req-action-btn">
-                                        <FaEdit /> Edit
-                                    </button>
-                                    <button onClick={(e) => handleCancel(request.id, e)}
-                                            className="my-req-cancel-btn">
-                                        <FaBan /> Cancel
-                                    </button>
-                                </div>
+
+                            {request.status === 'PENDING' && (
+                                <button
+                                    className="my-req-action-btn delete"
+                                    onClick={(e) => handleCancel(request.id, e)}
+                                >
+                                    <FaBan />
+                                </button>
                             )}
                         </div>
                     </div>
                 ))}
             </div>
+
+            {confirmCancelId && (
+                <div className="my-req-modal-overlay">
+                    <div className="my-req-modal-box">
+                        <h3>Cancel Request?</h3>
+                        <p>Are you sure you want to cancel this request?</p>
+                        <div className="my-req-modal-actions">
+                            <button onClick={confirmDelete} disabled={deleting} className="confirm-btn">
+                                {deleting ? "Cancelling..." : "Yes, Cancel"}
+                            </button>
+                            <button onClick={cancelDelete} className="cancel-btn">No, Go Back</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

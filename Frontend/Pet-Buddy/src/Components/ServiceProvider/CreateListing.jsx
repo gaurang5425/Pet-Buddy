@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext.jsx';
 import axios from 'axios';
 import { FaUpload, FaTimes, FaCheck, FaExclamationCircle } from 'react-icons/fa';
 import './CreateListing.css';
 
 const CreateListing = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
     const { userData } = useUser();
     const [formData, setFormData] = useState({
@@ -34,6 +35,32 @@ const CreateListing = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [progress, setProgress] = useState(0);
 
+    const [isUpdateMode, setIsUpdateMode] = useState(false);
+    useEffect(() => {
+        if (id) {
+            setIsUpdateMode(true);
+            axios.get(`http://localhost:8080/api/pet-services/${id}`)
+                .then((res) => {
+                    const data = res.data;
+                    setFormData({
+                        name: data.name,
+                        ownerName: data.ownerName,
+                        location: data.location,
+                        distance: data.distance,
+                        serviceType: data.serviceType,
+                        petTypes: data.petTypes || [],
+                        price: data.price,
+                        description: data.description,
+                        // do not load images in edit
+                    });
+                    // Optionally, load images if you want to support re-editing them
+                })
+                .catch((err) => {
+                    console.error("Error loading listing:", err);
+                });
+        }
+    }, [id]);
+
     const serviceTypes = [
         'Pet Boarding',
         'House Sitting',
@@ -54,6 +81,13 @@ const CreateListing = () => {
         'Reptile',
         'Other'
     ];
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
 
     // Calculate form completion progress
     useEffect(() => {
@@ -228,25 +262,24 @@ const CreateListing = () => {
 
         try {
             // Check required fields first
-            if (!formData.name || !formData.ownerName || !formData.location || 
-                !formData.distance || !formData.description || !formData.price || 
+            if (!formData.name || !formData.ownerName || !formData.location ||
+                !formData.distance || !formData.description || !formData.price ||
                 !formData.serviceType || formData.petTypes.length === 0 || !formData.base64Image) {
                 setError('Please fill in all required fields');
                 setIsSubmitting(false);
                 return;
             }
 
-            // Validate each field
+            // Validate fields
             const newValidation = {};
             let hasErrors = false;
 
-            // Only validate fields that have values
             Object.keys(formData).forEach(key => {
-                if (key !== 'rating' && key !== 'reviews' && key !== 'completedBookings' && 
-                    key !== 'badges' && key !== 'image' && key !== 'moreImages' && 
+                if (key !== 'rating' && key !== 'reviews' && key !== 'completedBookings' &&
+                    key !== 'badges' && key !== 'image' && key !== 'moreImages' &&
                     key !== 'base64Image' && key !== 'base64MoreImages') {
                     const value = formData[key];
-                    if (value) {  // Only validate if the field has a value
+                    if (value) {
                         const validationResult = validateField(key, value);
                         newValidation[key] = validationResult;
                         if (validationResult !== 'valid') {
@@ -265,7 +298,7 @@ const CreateListing = () => {
             }
 
             const serviceData = {
-                id: Date.now(),
+                id: id ? id : Date.now(),
                 name: formData.name,
                 ownerName: formData.ownerName,
                 location: formData.location,
@@ -275,6 +308,7 @@ const CreateListing = () => {
                 reviews: Math.floor(Math.random() * (200 - 50 + 1)) + 50,
                 completedBookings: Math.floor(Math.random() * (200 - 50 + 1)) + 50,
                 price: parseFloat(formData.price),
+                req_accepted: false,
                 serviceType: formData.serviceType,
                 petTypes: formData.petTypes,
                 badges: ['Certified', 'Top Rated'],
@@ -282,18 +316,28 @@ const CreateListing = () => {
                 base64MoreImages: formData.base64MoreImages
             };
 
-            const response = await axios.post('http://localhost:8080/api/pet-services/upload', serviceData);
-
-            if (response.status === 201) {
-                navigate('/my-listings');
+            if (id) {
+                // UPDATE EXISTING
+                const response = await axios.put(`http://localhost:8080/api/pet-services/id/${id}`, serviceData);
+                if (response.status === 200) {
+                    navigate(`/pet-sitter-update/${id}`);
+                }
+            } else {
+                // CREATE NEW
+                const response = await axios.post('http://localhost:8080/api/pet-services/upload', serviceData);
+                if (response.status === 201) {
+                    navigate('/my-listings');
+                }
             }
+
         } catch (err) {
-            console.error('Error creating listing:', err);
-            setError(err.response?.data?.message || 'Error creating listing. Please try again.');
+            console.error('Error saving listing:', err);
+            setError(err.response?.data?.message || 'Error saving listing. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
+
 
     return (
         <div className="page-wrapper">
@@ -526,13 +570,14 @@ const CreateListing = () => {
 
                     {error && <div className="error-message">{error}</div>}
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className={`submit-button ${isSubmitting ? 'submitting' : ''}`}
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Creating Listing...' : 'Create Listing'}
+                        {isSubmitting ? (isUpdateMode ? 'Updating Listing...' : 'Creating Listing...') : (isUpdateMode ? 'Update Listing' : 'Create Listing')}
                     </button>
+
                 </form>
             </div>
         </div>

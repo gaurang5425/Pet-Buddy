@@ -27,7 +27,7 @@ public class PetBuddyBackendApplication {
 				//hello
 				registry.addMapping("/**")
 						.allowedOrigins("http://localhost:5173")
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
 						.allowedHeaders("*") // Allow all headers
 						.allowCredentials(true)
 						.maxAge(3600); ;

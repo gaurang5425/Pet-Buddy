@@ -2,6 +2,7 @@ package com.example.PetBuddy_Backend.PetService;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,71 @@ public class PetServiceService {
 
     public List<PetService> getPetServiceByOwnerName(String name) {
         return petServiceRepository.findByOwnerName(name);
+    }
+
+    public PetService patchPetService(String name, Map<String, Object> updates) {
+        PetService existingService = petServiceRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        if (updates.containsKey("req_accepted")) {
+            existingService.setReq_accepted((Boolean) updates.get("req_accepted"));
+        }
+        return petServiceRepository.save(existingService);
+    }
+
+    public PetService updatePetServiceById(Long id, PetService petServiceDetails) {
+        Optional<PetService> petServiceOptional = petServiceRepository.findById(id);
+        if (petServiceOptional.isPresent()) {
+            PetService existingPetService = petServiceOptional.get();
+
+            // Update fields
+            existingPetService.setName(petServiceDetails.getName());
+            existingPetService.setOwnerName(petServiceDetails.getOwnerName());
+            existingPetService.setLocation(petServiceDetails.getLocation());
+            existingPetService.setDistance(petServiceDetails.getDistance());
+            existingPetService.setDescription(petServiceDetails.getDescription());
+            existingPetService.setRating(petServiceDetails.getRating());
+            existingPetService.setReviews(petServiceDetails.getReviews());
+            existingPetService.setCompletedBookings(petServiceDetails.getCompletedBookings());
+            existingPetService.setPrice(petServiceDetails.getPrice());
+
+            // Handle main image
+            if (petServiceDetails.getBase64Image() != null && !petServiceDetails.getBase64Image().isEmpty()) {
+                existingPetService.setImage(Base64.getDecoder().decode(petServiceDetails.getBase64Image()));
+            } else if (petServiceDetails.getImage() != null) {
+                existingPetService.setImage(petServiceDetails.getImage());
+            }
+
+            // Handle additional images
+            if (petServiceDetails.getBase64MoreImages() != null && !petServiceDetails.getBase64MoreImages().isEmpty()) {
+                existingPetService.setBase64MoreImages(petServiceDetails.getBase64MoreImages());
+            } else if (petServiceDetails.getMoreImages() != null) {
+                existingPetService.setMoreImages(petServiceDetails.getMoreImages());
+            }
+
+            existingPetService.setBadges(petServiceDetails.getBadges());
+            existingPetService.setServiceType(petServiceDetails.getServiceType());
+            existingPetService.setPetTypes(petServiceDetails.getPetTypes());
+
+            return petServiceRepository.save(existingPetService);
+        } else {
+            throw new RuntimeException("Pet service not found with ID: " + id);
+        }
+    }
+
+    public PetService updateRatingAndReview(Long id, Map<String, Object> updates) {
+        PetService petService = petServiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PetService not found"));
+
+        if (updates.containsKey("rating")) {
+            petService.setRating((Integer) updates.get("rating"));
+        }
+
+        if (updates.containsKey("reviews")) {
+            petService.setReviews((Integer) updates.get("reviews"));
+        }
+
+        return petServiceRepository.save(petService);
     }
 
 

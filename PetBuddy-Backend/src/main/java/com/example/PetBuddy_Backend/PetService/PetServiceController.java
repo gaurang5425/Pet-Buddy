@@ -1,22 +1,14 @@
 package com.example.PetBuddy_Backend.PetService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/pet-services")
@@ -98,7 +90,37 @@ public class PetServiceController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+
+    @PatchMapping(value = "/{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PetService> patchPetService(@PathVariable String name, @RequestBody Map<String, Object> updates) {
+        try {
+            PetService updatedPetService = petServiceService.patchPetService(name, updates);
+            return new ResponseEntity<>(updatedPetService, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/rating-review", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PetService> updateRatingAndReview(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        try {
+            PetService updatedPetService = petServiceService.updateRatingAndReview(id, updates);
+            return new ResponseEntity<>(updatedPetService, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping(value="/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PetService> updatePetServiceById(@PathVariable Long id, @RequestBody PetService petService) {
+        try {
+            PetService updatedPetService = petServiceService.updatePetServiceById(id, petService);
+            return new ResponseEntity<>(updatedPetService, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     // Delete a pet service
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePetService(@PathVariable Long id) {

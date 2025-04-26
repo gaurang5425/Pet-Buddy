@@ -1,10 +1,17 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimesCircle } from 'react-icons/fa';
 import './PaymentStatus.css';
 
 const PaymentFailure = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
 
     const handleRetry = () => {
         navigate(-1); // Go back to previous page
