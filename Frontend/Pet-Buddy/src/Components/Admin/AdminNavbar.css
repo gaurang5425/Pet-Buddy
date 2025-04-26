@@ -1,85 +1,120 @@
 .admin-navbar {
-    background-color: #777272;
-    padding: 1rem;
-    color: white;
+    background-color: #ffffff;
+    height: 80px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
-    width: 100%;
+    left: 0;
+    right: 0;
     z-index: 1000;
 }
 
 .admin-navbar-container {
     max-width: 1200px;
     margin: 0 auto;
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
 }
 
 .admin-navbar-logo {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: white;
+    gap: 10px;
 }
 
 .admin-logo-image {
-    height: 40px;
-    margin-right: 10px;
+    height: 50px;
+    width: auto;
 }
 
 .admin-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+    color: #8865c1;
+    font-weight: 600;
+    font-size: 18px;
 }
 
 .admin-nav-menu {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 8px;
 }
 
 .admin-nav-link {
-    color: white;
+    color: #333;
     text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
+    padding: 8px 12px;
     border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease;
 }
 
 .admin-nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #8865c1;
 }
 
 .admin-profile {
+    position: relative;
+    margin-left: 20px;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 12px;
 }
 
 .admin-email {
-    font-size: 0.9rem;
+    color: #666;
+    font-size: 14px;
 }
 
 .admin-icon {
-    font-size: 1.5rem;
+    color: #8865c1;
+    font-size: 24px;
 }
 
 .admin-logout {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background: none;
-    border: 1px solid white;
-    color: white;
-    padding: 0.5rem 1rem;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    background: #fff1f1;
+    color: #dc3545;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s ease;
 }
 
 .admin-logout:hover {
-    background-color: white;
-    color: #1a237e;
+    background: #ffe6e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-navbar-container {
+        padding: 0 15px;
+    }
+
+    .admin-title {
+        display: none;
+    }
+
+    .admin-nav-menu {
+        gap: 15px;
+    }
+
+    .admin-nav-link {
+        font-size: 14px;
+    }
+
+    .admin-email {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-nav-menu {
+        display: none;
+    }
 }

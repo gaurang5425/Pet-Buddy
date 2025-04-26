@@ -1,17 +1,27 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCog, FaSignOutAlt } from 'react-icons/fa';
+import axios from 'axios';
 import './AdminNavbar.css';
 import logo from '../../assets/logo101.png';
 
 const AdminNavbar = () => {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        // Clear admin session
-        localStorage.removeItem('adminAuth');
-        // Redirect to login
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            // Clear admin session
+            localStorage.removeItem('adminAuth');
+            // Wait for the backend logout
+            await axios.get('http://localhost:8080/admin/logout', { withCredentials: true });
+            // Redirect to login
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Force logout anyway
+            localStorage.removeItem('adminAuth');
+            window.location.href = '/login';
+        }
     };
 
     return (
@@ -19,7 +29,6 @@ const AdminNavbar = () => {
             <div className="admin-navbar-container">
                 <Link to="/admin" className="admin-navbar-logo">
                     <img src={logo} alt="PetBuddy Admin" className="admin-logo-image" />
-                    <span className="admin-title">Admin Panel</span>
                 </Link>
 
                 <div className="admin-nav-menu">
@@ -29,8 +38,6 @@ const AdminNavbar = () => {
                     <Link to="/admin/reports" className="admin-nav-link">Reports</Link>
 
                     <div className="admin-profile">
-                        <span className="admin-email">admin@gmail.com</span>
-                        <FaUserCog className="admin-icon" />
                         <button onClick={handleLogout} className="admin-logout">
                             <FaSignOutAlt />
                             Logout
